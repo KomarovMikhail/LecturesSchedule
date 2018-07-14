@@ -1,5 +1,4 @@
 import urllib.request
-import config
 import xlrd
 from lxml import etree
 from datetime import datetime
@@ -79,6 +78,6 @@ def get_nearest(xml_file):
     return upcoming[:3]
 
 
-download_spreadsheet(config.URL, config.XLSX_PATH)
-convert_to_xml(config.XLSX_PATH, config.XML_PATH)
-print(get_nearest(config.XML_PATH))
+# download_spreadsheet(config.URL, config.XLSX_PATH)
+# convert_to_xml(config.XLSX_PATH, config.XML_PATH)
+# print(get_nearest(config.XML_PATH))
