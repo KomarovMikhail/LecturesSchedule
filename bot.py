@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*-
 import config
 import telebot
-from sslib import get_nearest
+from sslib import get_nearest, download_spreadsheet, convert_to_xml
 
-bot = telebot.TeleBot(config.token)
+bot = telebot.TeleBot(config.TOKEN)
+
+
+@bot.message_handler(commands=['start', 'help'])
+def handle_start_help(message):
+    text = 'Этот бот поможет тебе узнать о ближайших лекциях.\nЧтобы получить актуальное расписание введи /get'
+    bot.send_message(message.chat.id, text)
 
 
 @bot.message_handler(commands=["get"])
 def get_schedule(message):
     text = ['Расписание ближайших лекций:\n------\n']
+
+    download_spreadsheet(config.URL, config.XLSX_PATH)
+    convert_to_xml(config.XLSX_PATH, config.XML_PATH)
 
     nearest = get_nearest(config.XML_PATH)
     for lecture in nearest:
