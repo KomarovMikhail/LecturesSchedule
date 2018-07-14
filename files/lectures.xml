@@ -1,0 +1,17 @@
+<lectures>
+  <lecture id="1" date="05.07" start="11:00" end="12:00" name="Математика" lecturer="Иванов А.Г."/>
+  <lecture id="2" date="06.07" start="11:00" end="13:00" name="Физика" lecturer="Петров Б.В."/>
+  <lecture id="3" date="06.07" start="12:00" end="14:00" name="Философия" lecturer="Курочкин С.В."/>
+  <lecture id="4" date="11.07" start="11:00" end="13:00" name="Физика" lecturer="Петров Б.В."/>
+  <lecture id="5" date="13.07" start="13:00" end="15:00" name="Комбинаторика" lecturer="Сухов П.Ю."/>
+  <lecture id="6" date="15.07" start="12:30" end="14:00" name="Математика" lecturer="Иванов А.Г."/>
+  <lecture id="7" date="16.07" start="10:00" end="12:00" name="Физика" lecturer="Петров Б.В."/>
+  <lecture id="8" date="16.07" start="11:00" end="13:00" name="Математика" lecturer="Иванов А.Г."/>
+  <lecture id="9" date="16.07" start="18:00" end="20:00" name="Теория графов" lecturer="Сухов П.Ю."/>
+  <lecture id="10" date="19.07" start="14:00" end="16:00" name="Алгоритмы" lecturer="Гусев. Н.Ю."/>
+  <lecture id="11" date="20.07" start="12:00" end="13:00" name="Математический анализ" lecturer="Иванов А.Г."/>
+  <lecture id="12" date="01.08" start="11:00" end="12:00" name="Информатика" lecturer="Гусев. Н.Ю."/>
+  <lecture id="13" date="10.08" start="11:00" end="12:00" name="Биология" lecturer="Савичев И.И."/>
+  <lecture id="14" date="20.08" start="12:00" end="13:00" name="Химия" lecturer="Краснов А.А."/>
+  <lecture id="15" date="02.08" start="13:00" end="15:00" name="Математика" lecturer="Иванов А.Г."/>
+</lectures>
