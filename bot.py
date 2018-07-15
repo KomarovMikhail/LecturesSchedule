@@ -9,21 +9,6 @@ import logging
 
 bot = telebot.TeleBot(config.TOKEN)
 
-# @server.route('/', methods=['GET', 'HEAD'])
-# def index():
-#     return ''
-#
-#
-# @server.route(config.WEBHOOK_URL_PATH, methods=['POST'])
-# def webhook():
-#     if flask.request.headers.get('content-type') == 'application/json':
-#         json_string = flask.request.get_data()
-#         update = telebot.types.Update.de_json(json_string)
-#         bot.process_new_messages([update.message])
-#         return ''
-#     else:
-#         flask.abort(403)
-
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
@@ -73,14 +58,7 @@ def webhook():
 
 
 if __name__ == '__main__':
-    # bot.remove_webhook()
-    # bot.set_webhook(url=config.WEBHOOK_URL_BASE + config.WEBHOOK_URL_PATH,
-    #                 certificate=open(config.WEBHOOK_SSL_CERT, 'r'))
-    # server.run(host=config.WEBHOOK_LISTEN,
-    #            port=config.WEBHOOK_PORT,
-    #            ssl_context=(config.WEBHOOK_SSL_CERT, config.WEBHOOK_SSL_PRIV),
-    #            debug=True)
-    server.run(host="0.0.0.0", port=os.environ.get('PORT', 80))
+    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
 #     while True:
 #         try:
 #             bot.polling(none_stop=True)
