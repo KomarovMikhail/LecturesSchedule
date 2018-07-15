@@ -38,7 +38,7 @@ def unknown_messages(message):
     bot.send_message(message.chat.id, "Sorry, I don't understand you, i'm just a machine :-(")
 
 
-@server.route("/bot", methods=['POST'])
+@server.route("/" + config.TOKEN, methods=['POST'])
 def get_message():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
@@ -47,13 +47,13 @@ def get_message():
 @server.route("/")
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url="https://" + config.TOKEN + "/bot")
+    bot.set_webhook(url="https://heroku/" + config.TOKEN + "/")
     return "!", 200
 
 
 if __name__ == '__main__':
     server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
-    server = Flask(__name__)
+    # server = Flask(__name__)
 #     while True:
 #         try:
 #             bot.polling(none_stop=True)
