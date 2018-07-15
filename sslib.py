@@ -75,5 +75,8 @@ def get_nearest(xml_file):
     upcoming = [lecture for lecture in lectures if is_upcoming(lecture)]
     upcoming = sorted(upcoming, key=sort_key)
 
-    return upcoming[:3]
+    if len(upcoming) >= 3:
+        return upcoming[:3]
+    else:
+        upcoming
 
