@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import config
 import telebot
-from sslib import get_nearest, download_spreadsheet, convert_to_xml
+from sslib import get_nearest
 import os
 from flask import Flask, request
 import logging
@@ -19,9 +19,6 @@ def handle_start_help(message):
 @bot.message_handler(commands=["get"])
 def get_schedule(message):
     text = ['Расписание ближайших лекций:\n------\n']
-
-    download_spreadsheet(config.URL, config.XLSX_PATH)
-    convert_to_xml(config.XLSX_PATH, config.XML_PATH)
 
     nearest = get_nearest(config.XML_PATH)
     for lecture in nearest:
