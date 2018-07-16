@@ -20,7 +20,7 @@ def handle_start_help(message):
 def get_schedule(message):
     text = ['Расписание ближайших лекций:\n------\n']
 
-    nearest = get_nearest(config.XML_PATH)
+    nearest = get_nearest(config.CSV_URL)
     for lecture in nearest:
         buf_text = 'Что: {0}.\nКогда: {1}.\nКто ведет: {2}\n------\n'.format(lecture['name'],
                                                                              lecture['date'] + ' в ' + lecture['start'],
