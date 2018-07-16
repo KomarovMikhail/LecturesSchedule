@@ -1,45 +1,22 @@
-import urllib.request
-import xlrd
-from lxml import etree
 from datetime import datetime
+import pandas as pd
 
 
-def download_spreadsheet(from_path, to_path):
-    with urllib.request.urlopen(from_path) as url:
-        spreadsheet = url.read()
-    file = open(to_path, "wb")
-    file.write(spreadsheet)
-    file.close()
-
-
-def convert_to_xml(from_path, to_path):
-    root = etree.Element('lectures')
-    wb = xlrd.open_workbook(from_path)
-    sh = wb.sheet_by_index(0)
-
-    for row in range(1, sh.nrows):
-        val = sh.row_values(row)
-        element = etree.SubElement(root, 'lecture')
-        element.set('id', str(int(val[0])))
-        element.set('date', str(val[1]))
-        element.set('start', str(val[2]))
-        element.set('end', str(val[3]))
-        element.set('name', str(val[4]))
-        element.set('lecturer', str(val[5]))
-
-    with open(to_path, 'wb') as out:
-        out.write(etree.tostring(root, pretty_print=True, encoding='UTF-8'))
-
-
-def parse_xml(path):
-    with open(path) as file:
-        xml = file.read()
+def get_spreadsheet(from_path):
+    spreadsheet = pd.read_csv(from_path)
 
     result = []
+    for i in range(len(spreadsheet['ID'])):
+        buf = {}
+        row = spreadsheet.loc[i, :]
+        buf['id'] = str(row[0])
+        buf['date'] = str(row[1])
+        buf['start'] = str(row[2])
+        buf['end'] = str(row[3])
+        buf['name'] = str(row[4])
+        buf['lecturer'] = str(row[5])
+        result.append(buf)
 
-    root = etree.fromstring(xml)
-    for child in root.getchildren():
-        result.append(child.attrib)
     return result
 
 
@@ -69,14 +46,10 @@ def sort_key(lecture):
     return datetime(datetime.now().year, month, day, hour, minute)
 
 
-def get_nearest(xml_file):
-    lectures = parse_xml(xml_file)
+def get_nearest(csv_url):
+    lectures = get_spreadsheet(csv_url)
 
     upcoming = [lecture for lecture in lectures if is_upcoming(lecture)]
     upcoming = sorted(upcoming, key=sort_key)
 
-    if len(upcoming) >= 3:
-        return upcoming[:3]
-    else:
-        upcoming
-
+    return upcoming[:3]
