@@ -6,11 +6,14 @@ import os
 from flask import Flask, request
 import logging
 from botlib import *
+from Client import Client
 
 
 bot = telebot.TeleBot(config.TOKEN)
 
 personal_data_step = 0  # Счетчик, показывающий этап заполнения персональных данных
+
+client = Client()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -48,7 +51,10 @@ def menu(message):
 
 @bot.message_handler(content_types=["text"])
 def unknown_messages(message):
-    bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
+    if client.is_authorized():
+        bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
+    else:
+        make_auth_step(bot, message, client)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -59,7 +65,8 @@ def callback(call):
     if call.data == 'Найти собеседника':
         bot.send_message(call.message.chat.id, "Вот тебе собеседник")
     if call.data == 'Обновить профиль':
-        bot.send_message(call.message.chat.id, "Вот тебе профиль")
+        client.increment_step()
+        bot.send_message(call.message.chat.id, "Как тебя зовут?")
 
 
 logger = telebot.logger
