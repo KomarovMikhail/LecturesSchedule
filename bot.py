@@ -12,10 +12,17 @@ bot = telebot.TeleBot(config.TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add("Меню")
+    main_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    main_markup.add("Меню")
     text = 'Этот бот поможет тебе узнать о ближайших лекциях.\nЧтобы получить актуальное расписание введи /get'
-    bot.send_message(message.chat.id, text, reply_markup=markup)
+    bot.send_message(message.chat.id, text, reply_markup=main_markup)
+
+    text = 'Что я могу для тебя сделать?'
+    inline_markup = telebot.types.InlineKeyboardMarkup()
+    buttons = ['Показать расписание', 'Найти собеседника', 'Обновить профиль']
+    for button in buttons:
+        inline_markup.add(telebot.types.InlineKeyboardButton(text=button, callback_data='cd'))
+    bot.send_message(message.chat.id, text, reply_markup=inline_markup)
 
 
 @bot.message_handler(commands=["get"])
@@ -34,8 +41,13 @@ def get_schedule(message):
 
 @bot.message_handler(content_types=["text"])
 def unknown_messages(message):
-    print("something")
-    bot.send_message(message.chat.id, "Sorry, I don't understand you, i'm just a machine :-(")
+    bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    if call.data == 'cd':
+        print(call)
 
 
 logger = telebot.logger
