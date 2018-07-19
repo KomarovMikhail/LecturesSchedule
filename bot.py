@@ -39,6 +39,11 @@ def get_schedule(message):
     bot.send_message(message.chat.id, text)
 
 
+@bot.message_handler(func=lambda message: message.text == 'hey', content_types=['text'])
+def hey(message):
+    bot.send_message(message.chat.id, 'И тебе хэй')
+
+
 @bot.message_handler(content_types=["text"])
 def unknown_messages(message):
     bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
