@@ -9,6 +9,8 @@ import logging
 
 bot = telebot.TeleBot(config.TOKEN)
 
+personal_data_step = 0  # Счетчик, показывающий этап заполнения персональных данных
+
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
@@ -21,7 +23,7 @@ def handle_start_help(message):
     inline_markup = telebot.types.InlineKeyboardMarkup()
     buttons = ['Показать расписание', 'Найти собеседника', 'Обновить профиль']
     for button in buttons:
-        inline_markup.add(telebot.types.InlineKeyboardButton(text=button, callback_data='cd'))
+        inline_markup.add(telebot.types.InlineKeyboardButton(text=button, callback_data=button))
     bot.send_message(message.chat.id, text, reply_markup=inline_markup)
 
 
@@ -39,9 +41,14 @@ def get_schedule(message):
     bot.send_message(message.chat.id, text)
 
 
-@bot.message_handler(func=lambda message: message.text == 'hey', content_types=['text'])
-def hey(message):
-    bot.send_message(message.chat.id, 'И тебе хэй')
+@bot.message_handler(func=lambda message: message.text == 'Меню', content_types=['text'])
+def menu(message):
+    text = 'Что я могу для тебя сделать?'
+    inline_markup = telebot.types.InlineKeyboardMarkup()
+    buttons = ['Показать расписание', 'Найти собеседника', 'Обновить профиль']
+    for button in buttons:
+        inline_markup.add(telebot.types.InlineKeyboardButton(text=button, callback_data='cd'))
+    bot.send_message(message.chat.id, text, reply_markup=inline_markup)
 
 
 @bot.message_handler(content_types=["text"])
@@ -51,8 +58,12 @@ def unknown_messages(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
-    if call.data == 'cd':
-        print(call)
+    if call.data == 'Показать расписание':
+        bot.send_message(call.message.chat.id, "Вот тебе расписание")
+    if call.data == 'Найти собеседника':
+        bot.send_message(call.message.chat.id, "Вот тебе собеседник")
+    if call.data == 'Обновить профиль':
+        bot.send_message(call.message.chat.id, "Вот тебе профиль")
 
 
 logger = telebot.logger
