@@ -5,6 +5,7 @@ from sslib import get_nearest
 import os
 from flask import Flask, request
 import logging
+from botlib import *
 
 
 bot = telebot.TeleBot(config.TOKEN)
@@ -20,10 +21,7 @@ def handle_start_help(message):
     bot.send_message(message.chat.id, text, reply_markup=main_markup)
 
     text = 'Что я могу для тебя сделать?'
-    inline_markup = telebot.types.InlineKeyboardMarkup()
-    buttons = ['Показать расписание', 'Найти собеседника', 'Обновить профиль']
-    for button in buttons:
-        inline_markup.add(telebot.types.InlineKeyboardButton(text=button, callback_data=button))
+    inline_markup = generate_menu()
     bot.send_message(message.chat.id, text, reply_markup=inline_markup)
 
 
@@ -44,10 +42,7 @@ def get_schedule(message):
 @bot.message_handler(func=lambda message: message.text == 'Меню', content_types=['text'])
 def menu(message):
     text = 'Что я могу для тебя сделать?'
-    inline_markup = telebot.types.InlineKeyboardMarkup()
-    buttons = ['Показать расписание', 'Найти собеседника', 'Обновить профиль']
-    for button in buttons:
-        inline_markup.add(telebot.types.InlineKeyboardButton(text=button, callback_data='cd'))
+    inline_markup = generate_menu()
     bot.send_message(message.chat.id, text, reply_markup=inline_markup)
 
 
