@@ -58,6 +58,7 @@ def unknown_messages(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
+    print(call.data)
     if call.data == 'Показать расписание':
         bot.send_message(call.message.chat.id, "Вот тебе расписание")
     if call.data == 'Найти собеседника':
