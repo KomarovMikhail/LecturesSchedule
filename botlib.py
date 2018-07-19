@@ -14,11 +14,11 @@ def make_auth_step(bot, message, client):
         bot.send_message(message.chat.id, 'Имя: ' + message.text)
         client.increment_step()
         bot.send_message(message.chat.id, 'Кем ты работаешь?')
-    if client.get_step() == 2:
+    elif client.get_step() == 2:
         bot.send_message(message.chat.id, 'Место работы: ' + message.text)
         client.increment_step()
         bot.send_message(message.chat.id, 'Расскажи немного о себе и своих интересах')
-    if client.get_step() == 3:
+    elif client.get_step() == 3:
         bot.send_message(message.chat.id, 'Интересы: ' + message.text)
         client.clean_step()
         bot.send_message(message.chat.id, 'Спасибо! Я записал тебя в список участников')
