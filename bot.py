@@ -12,8 +12,10 @@ bot = telebot.TeleBot(config.TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
+    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add("Меню")
     text = 'Этот бот поможет тебе узнать о ближайших лекциях.\nЧтобы получить актуальное расписание введи /get'
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, text, reply_markup=markup)
 
 
 @bot.message_handler(commands=["get"])
