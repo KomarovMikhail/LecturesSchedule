@@ -25,6 +25,17 @@ def handle_start_help(message):
     bot.send_message(message.chat.id, text, reply_markup=inline_markup)
 
 
+@bot.message_handler(commands=['test'])
+def test_db(message):
+    users = auth_handler.get_users()
+    if len(users) == 0:
+        bot.send_message(message.chat.id, "Нет зарегестрированных пользователей")
+    else:
+        for user in users:
+            text = ','.join(user)
+            bot.send_message(message.chat.id, text)
+
+
 @bot.message_handler(commands=["get"])
 def get_schedule(message):
     text = ['Расписание ближайших лекций:\n------\n']

@@ -37,6 +37,8 @@ class AuthHandler:
 
         ws.append(self._auth_queue[client_id]['data'])
 
+        print(self._auth_num, self._auth_queue[client_id]['data'])  # for test only
+
         wb.save(self._db_path)
 
     def get_auth_num(self):
@@ -76,3 +78,13 @@ class AuthHandler:
             self._add_to_db(client_id)
             self._remove_client(client_id)
             bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников")
+
+    def get_users(self):  # for test only
+        wb = openpyxl.load_workbook(filename=self._db_path)
+        ws = wb['Participants']
+
+        result = []
+        for i in range(2, self._auth_num + 2):
+            result.append(ws.rows[i])
+
+        return result
