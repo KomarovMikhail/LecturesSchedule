@@ -32,7 +32,7 @@ def test_db(message):
         bot.send_message(message.chat.id, "Нет зарегестрированных пользователей")
     else:
         for user in users:
-            text = ','.join(user)
+            text = str(user)
             bot.send_message(message.chat.id, text)
 
 
