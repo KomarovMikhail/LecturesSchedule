@@ -70,11 +70,18 @@ def callback(call):
     print(call.data)
     if call.data == 'Показать расписание':
         bot.send_message(call.message.chat.id, "Вот тебе расписание")
-    if call.data == 'Найти собеседника':
+    elif call.data == 'Найти собеседника':
         bot.send_message(call.message.chat.id, "Вот тебе собеседник")
-    if call.data == 'Обновить профиль':
+    elif call.data == 'Обновить профиль':
         auth_handler.add_client(call.message.chat.id)
         auth_handler.make_step(call.message.chat.id, call.message, bot)
+    elif call.data == 'Мой профиль':
+        profile = auth_handler.get_profile(call.message.chat.id)
+        if profile is None:
+            text = 'Ты еще не заполнял информацию о себе. Чтобы исправить это нажми "Обновить профиль"'
+        else:
+            text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[1], profile[2], profile[3])
+        bot.send_message(call.message.chat.id, text)
 
 
 logger = telebot.logger

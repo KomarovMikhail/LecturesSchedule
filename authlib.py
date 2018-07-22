@@ -33,12 +33,24 @@ class AuthHandler:
     def _add_to_db(self, client_id):
         wb = openpyxl.load_workbook(filename=self._db_path)
         ws = wb['Participants']
+
+        r = 0
+        for i in range(2, self._auth_num + 2):
+            cell = 'A' + str(i)
+            if ws[cell] == client_id:
+                r = ws[cell]
+                break
+
+        if r == 0:
+            ws.append(self._auth_queue[client_id]['data'])
+        else:
+            index = 0
+            for c in 'ABCDE':
+                cell = c + str(r)
+                ws[cell] = self._auth_queue[client_id]['data'][index]
+                index += 1
+
         self._auth_num += 1
-
-        ws.append(self._auth_queue[client_id]['data'])
-
-        print(self._auth_num, self._auth_queue[client_id]['data'])  # for test only
-
         wb.save(self._db_path)
 
     def get_auth_num(self):
@@ -78,6 +90,25 @@ class AuthHandler:
             self._add_to_db(client_id)
             self._remove_client(client_id)
             bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников")
+
+    def get_profile(self, client_id):
+        wb = openpyxl.load_workbook(filename=self._db_path)
+        ws = wb['Participants']
+
+        r = 0
+        for i in range(2, self._auth_num + 2):
+            cell = 'A' + str(i)
+            if ws[cell] == client_id:
+                r = ws[cell]
+                break
+
+        if r == 0:
+            return None
+        else:
+            result = []
+            for c in 'ABCDE':
+                result.append(ws[c + str(r)])
+            return result
 
     def get_users(self):  # for test only
         wb = openpyxl.load_workbook(filename=self._db_path)
