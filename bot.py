@@ -80,7 +80,7 @@ def callback(call):
         if profile is None:
             text = 'Ты еще не заполнял информацию о себе. Чтобы исправить это нажми "Обновить профиль"'
         else:
-            text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[1], profile[2], profile[3])
+            text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[0], profile[1], profile[2])
         bot.send_message(call.message.chat.id, text)
 
 

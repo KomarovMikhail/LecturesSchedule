@@ -13,7 +13,7 @@ class AuthHandler:
         ws = wb.active
         ws.title = 'Participants'
 
-        labels = ['id', 'name', 'job', 'interests', 'is_active']
+        labels = ['id', 'username', 'name', 'job', 'interests', 'is_active']
         ws.append(labels)
 
         wb.save(filename=self._db_path)
@@ -45,7 +45,7 @@ class AuthHandler:
             ws.append(self._auth_queue[client_id]['data'])
         else:
             index = 0
-            for c in 'ABCDE':
+            for c in 'ABCDEF':
                 cell = c + str(r)
                 ws[cell].value = self._auth_queue[client_id]['data'][index]
                 index += 1
@@ -73,6 +73,7 @@ class AuthHandler:
         step = self._get_step(client_id)
         if step == 0:
             self._append_data(client_id, message.chat.id)
+            self._append_data(client_id, message.from_user.username)
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Как тебя зовут?")
         elif step == 1:
@@ -106,7 +107,7 @@ class AuthHandler:
             return None
         else:
             result = []
-            for c in 'ABCDE':
+            for c in 'CDE':
                 cell = c + str(r)
                 result.append(ws[cell].value)
             return result
