@@ -37,8 +37,8 @@ class AuthHandler:
         r = 0
         for i in range(2, self._auth_num + 2):
             cell = 'A' + str(i)
-            if ws[cell] == client_id:
-                r = ws[cell]
+            if ws[cell].value == client_id:
+                r = i
                 break
 
         if r == 0:
@@ -47,7 +47,7 @@ class AuthHandler:
             index = 0
             for c in 'ABCDE':
                 cell = c + str(r)
-                ws[cell] = self._auth_queue[client_id]['data'][index]
+                ws[cell].value = self._auth_queue[client_id]['data'][index]
                 index += 1
 
         self._auth_num += 1
@@ -98,8 +98,8 @@ class AuthHandler:
         r = 0
         for i in range(2, self._auth_num + 2):
             cell = 'A' + str(i)
-            if ws[cell] == client_id:
-                r = ws[cell]
+            if ws[cell].value == client_id:
+                r = i
                 break
 
         if r == 0:
@@ -107,7 +107,8 @@ class AuthHandler:
         else:
             result = []
             for c in 'ABCDE':
-                result.append(ws[c + str(r)])
+                cell = c + str(r)
+                result.append(ws[cell].value)
             return result
 
     def get_users(self):  # for test only
