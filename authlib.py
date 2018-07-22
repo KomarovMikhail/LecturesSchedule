@@ -70,13 +70,16 @@ class AuthHandler:
         return self._auth_queue.get(client_id) is None
 
     def make_step(self, client_id, message, bot):
+        """
+        Прим.: на шаге 0 обрабатывается сообщение от бота, на последующих - от пользователя
+        """
         step = self._get_step(client_id)
         if step == 0:
             self._append_data(client_id, message.chat.id)
-            self._append_data(client_id, message.from_user.username)
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Как тебя зовут?")
         elif step == 1:
+            self._append_data(client_id, message.from_user.username)
             self._append_data(client_id, message.text)
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Кем ты работаешь?")
