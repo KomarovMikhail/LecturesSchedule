@@ -84,7 +84,7 @@ class AuthHandler:
         ws = wb['Participants']
 
         result = []
-        for i in range(2, self._auth_num + 2):
-            result.append(ws.rows[i])
+        for row in ws.rows:
+            result.append([cell.value for cell in row])
 
-        return result
+        return result[1:]
