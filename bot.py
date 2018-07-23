@@ -87,14 +87,22 @@ def callback(call):
                 advisor.set_offer(cid, p[0])
                 inline_markup = generate_answer_buttons()
                 bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                 'Интересы: {2}\nUsername: @{3}'.format(p[1], p[3], p[4], p[2]),
+                                 'Интересы: {2}\nUsername: @{3}'.format(p[2], p[3], p[4], p[1]),
                                  reply_markup=inline_markup)
         else:
             bot.send_message(cid, "Ты еще не заполнил информацию о себе.\n"
                              "Нажми \"Обновить профиль\" и пройди авторизацию.")
 
     elif call.data == '+':
-        pass
+        to_id = advisor.get_offer(cid)
+        advisor.del_client(cid)
+        p = auth_handler.get_profile(cid)
+        text = 'Привет! Один из участников заинтересовался тобой. Держи некоторую информацию о нем:\n' \
+               'Имя: {0}\nГде работает: {1}\nИнтересы: {2}\nUsername: {3}\n' \
+               'Если этот участник тоже тебя заинтересовал, ' \
+               'напиши ему в личные сообщения.'.format(p[2], p[3], p[4], p[1])
+        # bot.send_message(to_id, text)
+        # bot.send_message(cid, "Участнику отправлено приглашение связаться с тобой.")
 
     elif call.data == '-':
         pass
@@ -107,7 +115,7 @@ def callback(call):
             advisor.set_offer(cid, p[0])
             inline_markup = generate_answer_buttons()
             bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                  'Интересы: {2}\nUsername: @{3}'.format(p[1], p[3], p[4], p[2]),
+                                  'Интересы: {2}\nUsername: @{3}'.format(p[2], p[3], p[4], p[1]),
                              reply_markup=inline_markup)
 
     elif call.data == 'Обновить профиль':
@@ -119,7 +127,7 @@ def callback(call):
         if profile is None:
             text = 'Ты еще не заполнял информацию о себе. Чтобы исправить это нажми "Обновить профиль"'
         else:
-            text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[0], profile[1], profile[2])
+            text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[2], profile[3], profile[4])
         bot.send_message(cid, text)
 
 

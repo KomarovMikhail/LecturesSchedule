@@ -119,7 +119,7 @@ class AuthHandler:
             return None
         else:
             result = []
-            for c in 'CDE':
+            for c in 'ABCDE':
                 cell = c + str(r)
                 result.append(ws[cell].value)
             return result
@@ -152,7 +152,6 @@ class AuthHandler:
             return result
         except IndexError:
             return None
-
 
     def get_users(self):  # for test only
         wb = openpyxl.load_workbook(filename=self._db_path)
