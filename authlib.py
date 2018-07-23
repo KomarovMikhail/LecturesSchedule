@@ -17,6 +17,14 @@ class AuthHandler:
         labels = ['id', 'username', 'name', 'job', 'interests', 'is_active']
         ws.append(labels)
 
+        # test labels
+        labels = [1, 'username1', 'name1', 'job1', 'interests1', True]
+        ws.append(labels)
+        self._auth_num += 1
+        labels = [2, 'username2', 'name2', 'job2', 'interests2', True]
+        ws.append(labels)
+        self._auth_num += 1
+
         wb.save(filename=self._db_path)
 
     def _increment_step(self, client_id):

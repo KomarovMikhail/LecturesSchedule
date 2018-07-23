@@ -87,7 +87,7 @@ def callback(call):
                 advisor.set_offer(cid, p[0])
                 inline_markup = generate_answer_buttons()
                 bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                 'Интересы: {2}\nUsername: {3}'.format(p[1], p[3], p[4], p[2]),
+                                 'Интересы: {2}\nUsername: @{3}'.format(p[1], p[3], p[4], p[2]),
                                  reply_markup=inline_markup)
         else:
             bot.send_message(cid, "Ты еще не заполнил информацию о себе.\n"
@@ -107,7 +107,7 @@ def callback(call):
             advisor.set_offer(cid, p[0])
             inline_markup = generate_answer_buttons()
             bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                  'Интересы: {2}\nUsername: {3}'.format(p[1], p[3], p[4], p[2]),
+                                  'Интересы: {2}\nUsername: @{3}'.format(p[1], p[3], p[4], p[2]),
                              reply_markup=inline_markup)
 
     elif call.data == 'Обновить профиль':
