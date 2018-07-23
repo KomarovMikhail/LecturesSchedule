@@ -1,4 +1,5 @@
 import openpyxl
+import random
 
 
 class AuthHandler:
@@ -62,7 +63,7 @@ class AuthHandler:
             'data': []
         }
 
-    def is_authorized(self, client_id):
+    def is_in_queue(self, client_id):
         """
         Возвращает True, если пользователь еще не делал запрос на авторизацию,
         либо уже авторизировался, False - иначе
@@ -114,6 +115,36 @@ class AuthHandler:
                 cell = c + str(r)
                 result.append(ws[cell].value)
             return result
+
+    def is_authorized(self, client_id):
+        wb = openpyxl.load_workbook(filename=self._db_path)
+        ws = wb['Participants']
+
+        for i in range(2, self._auth_num + 2):
+            cell = 'A' + str(i)
+            if ws[cell].value == client_id:
+                return True
+        return False
+
+    def get_participant(self, client_id):
+        wb = openpyxl.load_workbook(filename=self._db_path)
+        ws = wb['Participants']
+
+        possible = []  # номера рядов потенциальных собеседников
+        for i in range(2, self._auth_num + 2):
+            if ws['A' + str(i)].value != client_id and ws['F' + str(i)].value:
+                possible.append(i)
+
+        try:
+            r = random.choice(possible)
+            result = []
+            for c in 'ABCDE':
+                cell = c + str(r)
+                result.append(ws[cell].value)
+            return result
+        except IndexError:
+            return None
+
 
     def get_users(self):  # for test only
         wb = openpyxl.load_workbook(filename=self._db_path)

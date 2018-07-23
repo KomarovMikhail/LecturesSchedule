@@ -7,10 +7,12 @@ from flask import Flask, request
 import logging
 from botlib import *
 from authlib import AuthHandler
+from advisor import Advisor
 
 
 bot = telebot.TeleBot(TOKEN)
 auth_handler = AuthHandler(DB_PATH)
+advisor = Advisor()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -59,7 +61,7 @@ def menu(message):
 
 @bot.message_handler(content_types=["text"])
 def unknown_messages(message):
-    if auth_handler.is_authorized(message.chat.id):
+    if auth_handler.is_in_queue(message.chat.id):
         bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
     else:
         auth_handler.make_step(message.chat.id, message, bot)
@@ -68,20 +70,57 @@ def unknown_messages(message):
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     print(call.data)
+    cid = call.message.chat.id
+
     if call.data == 'Показать расписание':
-        bot.send_message(call.message.chat.id, "Вот тебе расписание")
+        bot.send_message(cid, "Вот тебе расписание")
+
     elif call.data == 'Найти собеседника':
-        bot.send_message(call.message.chat.id, "Вот тебе собеседник")
+        bot.send_message(cid,
+                         "Давай попробуем найти людей, с которыми тебе будет интересно пообщаться.\n"
+                         "Нажимай \"+\", если человек интересен и я отправлю ему приглашение связаться с тобой.")
+        if auth_handler.is_authorized(cid):
+            p = auth_handler.get_participant(cid)
+            if p is None:
+                bot.send_message(cid, "Извини, я не могу найти тебе подходящего собеседника.")
+            else:
+                advisor.set_offer(cid, p[0])
+                inline_markup = generate_answer_buttons()
+                bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
+                                 'Интересы: {2}\nUsername: {3}'.format(p[1], p[3], p[4], p[2]),
+                                 reply_markup=inline_markup)
+        else:
+            bot.send_message(cid, "Ты еще не заполнил информацию о себе.\n"
+                             "Нажми \"Обновить профиль\" и пройди авторизацию.")
+
+    elif call.data == '+':
+        pass
+
+    elif call.data == '-':
+        pass
+
+    elif call.data == 'Показать еще...':
+        p = auth_handler.get_participant(cid)
+        if p is None:
+            bot.send_message(cid, "Извини, я не могу найти тебе подходящего собеседника.")
+        else:
+            advisor.set_offer(cid, p[0])
+            inline_markup = generate_answer_buttons()
+            bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
+                                  'Интересы: {2}\nUsername: {3}'.format(p[1], p[3], p[4], p[2]),
+                             reply_markup=inline_markup)
+
     elif call.data == 'Обновить профиль':
-        auth_handler.add_client(call.message.chat.id)
-        auth_handler.make_step(call.message.chat.id, call.message, bot)
+        auth_handler.add_client(cid)
+        auth_handler.make_step(cid, call.message, bot)
+
     elif call.data == 'Мой профиль':
-        profile = auth_handler.get_profile(call.message.chat.id)
+        profile = auth_handler.get_profile(cid)
         if profile is None:
             text = 'Ты еще не заполнял информацию о себе. Чтобы исправить это нажми "Обновить профиль"'
         else:
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[0], profile[1], profile[2])
-        bot.send_message(call.message.chat.id, text)
+        bot.send_message(cid, text)
 
 
 logger = telebot.logger
