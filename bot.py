@@ -72,6 +72,7 @@ def handle_photo(message):
     if True:
         file_info = bot.get_file(message.photo[0].file_id)
         downloaded = bot.download_file(file_info.file_path)
+        print(file_info.file_path, file_info.file_size)
 
         src = IMG_PATH + str(message.chat.id) + '.jpg'
         with open(src, 'wb') as new_file:
