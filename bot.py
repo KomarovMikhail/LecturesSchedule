@@ -67,6 +67,20 @@ def unknown_messages(message):
         auth_handler.make_step(message.chat.id, message, bot)
 
 
+@bot.message_handler(content_types='photo')
+def handle_photo(message):
+    try:
+        file_info = bot.get_file(message.photo[0].file_id)
+        downloaded = bot.download_file(file_info.file_path)
+
+        src = IMG_PATH + str(message.chat.id) + '.jpg'
+        with open(src, 'wb') as new_file:
+            new_file.write(downloaded)
+        bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id) + '.jpg', 'rb'))
+    except Exception as e:
+        bot.send_message(message.chat.id, 'Извини, не удалось загрузить изображение.')
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
     print(call.data)

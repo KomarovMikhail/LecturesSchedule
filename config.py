@@ -6,3 +6,5 @@ CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaIuizRlU2hODjbpXeyd
 APP_NAME = 'voyage-livre-89482.herokuapp.com'
 
 DB_PATH = 'db/db.xlsx'
+
+IMG_PATH = 'imgs/'
