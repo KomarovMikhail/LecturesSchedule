@@ -69,7 +69,7 @@ def unknown_messages(message):
 
 @bot.message_handler(content_types='photo')
 def handle_photo(message):
-    try:
+    if True:
         file_info = bot.get_file(message.photo[0].file_id)
         downloaded = bot.download_file(file_info.file_path)
 
@@ -77,8 +77,8 @@ def handle_photo(message):
         with open(src, 'wb') as new_file:
             new_file.write(downloaded)
         bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id) + '.jpg', 'rb'))
-    except Exception as e:
-        bot.send_message(message.chat.id, e.args)
+    # except Exception as e:
+    #     bot.send_message(message.chat.id, e.args)
 
 
 @bot.callback_query_handler(func=lambda call: True)
