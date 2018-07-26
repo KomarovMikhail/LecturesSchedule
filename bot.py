@@ -74,10 +74,10 @@ def handle_photo(message):
         downloaded = bot.download_file(file_info.file_path)
         print(file_info.file_path, file_info.file_size)
 
-        src = IMG_PATH + str(message.chat.id) + '.jpg'
+        src = IMG_PATH + str(message.chat.id)
         with open(src, 'wb') as new_file:
             new_file.write(downloaded)
-        bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id) + '.jpg', 'rb'))
+        bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id), 'rb'))
     # except Exception as e:
     #     bot.send_message(message.chat.id, e.args)
 
