@@ -78,7 +78,7 @@ def handle_photo(message):
             new_file.write(downloaded)
         bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id) + '.jpg', 'rb'))
     except Exception as e:
-        bot.send_message(message.chat.id, 'Извини, не удалось загрузить изображение.')
+        bot.send_message(message.chat.id, e.args)
 
 
 @bot.callback_query_handler(func=lambda call: True)
