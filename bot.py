@@ -69,6 +69,10 @@ def unknown_messages(message):
 
 @bot.message_handler(content_types='photo')
 def handle_photo(message):
+    if auth_handler.is_in_queue(message.chat.id):
+        bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
+    else:
+        auth_handler.make_step(message.chat.id, message, bot)
     if True:
         file_info = bot.get_file(message.photo[0].file_id)
         downloaded = bot.download_file(file_info.file_path)
@@ -143,6 +147,7 @@ def callback(call):
             text = 'Ты еще не заполнял информацию о себе. Чтобы исправить это нажми "Обновить профиль"'
         else:
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[2], profile[3], profile[4])
+        bot.send_photo(cid, open(profile[5], 'rb'))
         bot.send_message(cid, text)
 
 

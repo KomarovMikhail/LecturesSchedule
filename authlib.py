@@ -1,5 +1,6 @@
 import openpyxl
 import random
+from config import IMG_PATH
 
 
 class AuthHandler:
@@ -14,14 +15,14 @@ class AuthHandler:
         ws = wb.active
         ws.title = 'Participants'
 
-        labels = ['id', 'username', 'name', 'job', 'interests', 'is_active']
+        labels = ['id', 'username', 'name', 'job', 'interests', 'is_active', 'photo']
         ws.append(labels)
 
         # test labels
-        labels = [1, 'username1', 'name1', 'job1', 'interests1', True]
+        labels = [1, 'username1', 'name1', 'job1', 'interests1', True, None]
         ws.append(labels)
         self._auth_num += 1
-        labels = [2, 'username2', 'name2', 'job2', 'interests2', True]
+        labels = [2, 'username2', 'name2', 'job2', 'interests2', True, None]
         ws.append(labels)
         self._auth_num += 1
 
@@ -95,14 +96,25 @@ class AuthHandler:
         elif step == 2:
             self._append_data(client_id, message.text)
             self._increment_step(client_id)
-            bot.send_message(message.chat.id, "Расскажи немного о себе и своих интересах")
+            bot.send_message(message.chat.id, "Расскажи немного о себе и своих интересах.")
         elif step == 3:
             self._append_data(client_id, message.text)
             self._append_data(client_id, True)
+            self._increment_step(client_id)
+            bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.")
+        elif step == 4:
+            file_info = bot.get_file(message.photo[0].file_id)
+            downloaded = bot.download_file(file_info.file_path)
+            print(file_info.file_path, file_info.file_size)
+
+            src = IMG_PATH + str(message.chat.id)
+            with open(src, 'wb') as new_file:
+                new_file.write(downloaded)
+            self._append_data(client_id, src)
 
             self._add_to_db(client_id)
             self._remove_client(client_id)
-            bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников")
+            bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников.")
 
     def get_profile(self, client_id):
         wb = openpyxl.load_workbook(filename=self._db_path)
@@ -119,7 +131,7 @@ class AuthHandler:
             return None
         else:
             result = []
-            for c in 'ABCDE':
+            for c in 'ABCDEG':
                 cell = c + str(r)
                 result.append(ws[cell].value)
             return result
