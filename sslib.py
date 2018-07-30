@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+import config
 
 
 def get_spreadsheet(from_path):
@@ -53,3 +54,18 @@ def get_nearest(csv_url):
     upcoming = sorted(upcoming, key=sort_key)
 
     return upcoming[:3]
+
+
+def get_faq(from_url):
+    spreadsheet = pd.read_csv(from_url)
+
+    result = []
+    for i in range(len(spreadsheet['Вопрос'])):
+        buf = {}
+        row = spreadsheet.loc[i, :]
+        buf['question'] = str(row[0])
+        buf['answer'] = str(row[1])
+        result.append(buf)
+
+    print(result)
+    return result

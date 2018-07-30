@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from config import *
 import telebot
-from sslib import get_nearest
+from sslib import get_nearest, get_faq
 import os
 from flask import Flask, request
 import logging
@@ -149,6 +149,12 @@ def callback(call):
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[2], profile[3], profile[4])
         bot.send_photo(cid, open(profile[5], 'rb'))
         bot.send_message(cid, text)
+
+    elif call.data == 'FAQ':
+        faq = get_faq(FAQ_URL)
+        for q in faq:
+            text = 'Вопрос: ' + q['question'] + '\n' + 'Ответ: ' + q['answer']
+            bot.send_message(cid, text)
 
 
 logger = telebot.logger
