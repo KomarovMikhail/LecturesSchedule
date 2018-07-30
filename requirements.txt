@@ -1,8 +1,11 @@
+APScheduler==3.5.1
 certifi==2018.4.16
 chardet==3.0.4
 click==6.7
 et-xmlfile==1.0.1
 Flask==1.0.2
+funcsigs==1.0.2
+futures==3.2.0
 idna==2.7
 itsdangerous==0.24
 jdcal==1.4
@@ -17,6 +20,7 @@ python-dateutil==2.7.3
 pytz==2018.5
 requests==2.19.1
 six==1.11.0
+tzlocal==1.5.1
 urllib3==1.23
 Werkzeug==0.14.1
 xlrd==1.1.0
