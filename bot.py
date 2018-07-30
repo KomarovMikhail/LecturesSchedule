@@ -165,7 +165,7 @@ def get_actual_schedule():
     print('I do this every minute')
 
 
-scheduler.add_job(get_actual_schedule, seconds=1)
+scheduler.add_job(get_actual_schedule, 'interval', minutes=1)
 
 
 logger = telebot.logger
