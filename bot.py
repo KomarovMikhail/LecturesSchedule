@@ -8,11 +8,15 @@ import logging
 from botlib import *
 from authlib import AuthHandler
 from advisor import Advisor
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 bot = telebot.TeleBot(TOKEN)
 auth_handler = AuthHandler(DB_PATH)
 advisor = Advisor()
+
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -147,7 +151,7 @@ def callback(call):
             text = 'Ты еще не заполнял информацию о себе. Чтобы исправить это нажми "Обновить профиль"'
         else:
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[2], profile[3], profile[4])
-        bot.send_photo(cid, open(profile[5], 'rb'))
+            bot.send_photo(cid, open(profile[5], 'rb'))
         bot.send_message(cid, text)
 
     elif call.data == 'FAQ':
@@ -155,6 +159,13 @@ def callback(call):
         for q in faq:
             text = 'Вопрос: ' + q['question'] + '\n' + 'Ответ: ' + q['answer']
             bot.send_message(cid, text)
+
+
+def get_actual_schedule():
+    print('I do this every minute')
+
+
+scheduler.add_job(get_actual_schedule, seconds=1)
 
 
 logger = telebot.logger
