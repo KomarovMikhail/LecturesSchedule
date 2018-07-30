@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from config import *
 import telebot
-from sslib import get_nearest, get_faq
+from sslib import get_nearest, get_faq, sort_key
 import os
 from flask import Flask, request
 import logging
@@ -9,6 +9,7 @@ from botlib import *
 from authlib import AuthHandler
 from advisor import Advisor
 from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime, timedelta
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -162,7 +163,20 @@ def callback(call):
 
 
 def get_actual_schedule():
-    print('I do this every minute')
+    nearest = get_nearest(CSV_URL)
+    now = datetime.now()
+    delta = timedelta(hours=1)
+    ids = auth_handler.get_all_ids()
+    print(nearest)
+
+    for item in nearest:
+        time = sort_key(item)  # время начала доклада
+        print(now + delta, time)
+        if now + delta > time:
+            text = 'Напоминание:\nВ {0} состоится доклад "{1}".\nЛектор: {2}.\n' \
+                   'Не пропустите.'.format(item['start'], item['name'], item['lecturer'])
+            for i in ids:
+                bot.send_message(i, text)
 
 
 scheduler.add_job(get_actual_schedule, 'interval', minutes=1)

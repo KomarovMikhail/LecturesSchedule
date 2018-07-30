@@ -19,12 +19,12 @@ class AuthHandler:
         ws.append(labels)
 
         # test labels
-        labels = [1, 'username1', 'name1', 'job1', 'interests1', True, None]
-        ws.append(labels)
-        self._auth_num += 1
-        labels = [2, 'username2', 'name2', 'job2', 'interests2', True, None]
-        ws.append(labels)
-        self._auth_num += 1
+        # labels = [1, 'username1', 'name1', 'job1', 'interests1', True, None]
+        # ws.append(labels)
+        # self._auth_num += 1
+        # labels = [2, 'username2', 'name2', 'job2', 'interests2', True, None]
+        # ws.append(labels)
+        # self._auth_num += 1
 
         wb.save(filename=self._db_path)
 
@@ -165,6 +165,14 @@ class AuthHandler:
         except IndexError:
             return None
 
+    def get_all_ids(self):
+        result = []
+        wb = openpyxl.load_workbook(filename=self._db_path)
+        ws = wb['Participants']
+        for i in range(2, self._auth_num + 2):
+            result.append(ws['A' + str(i)].value)
+        return result
+
     def get_users(self):  # for test only
         wb = openpyxl.load_workbook(filename=self._db_path)
         ws = wb['Participants']
@@ -174,3 +182,4 @@ class AuthHandler:
             result.append([cell.value for cell in row])
 
         return result[1:]
+
