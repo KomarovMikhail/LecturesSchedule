@@ -10,11 +10,13 @@ from authlib import AuthHandler
 from advisor import Advisor
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
+from nothandler import NotificationHandler
 
 
 bot = telebot.TeleBot(TOKEN)
 auth_handler = AuthHandler(DB_PATH)
 advisor = Advisor()
+n_handler = NotificationHandler()
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -164,19 +166,23 @@ def callback(call):
 
 def get_actual_schedule():
     nearest = get_nearest(CSV_URL)
+    for item in nearest:
+        n_handler.try_add_item(item)
+
     now = datetime.now()
     delta = timedelta(hours=1)
     ids = auth_handler.get_all_ids()
-    print(nearest)
 
-    for item in nearest:
+    for item in n_handler.get_data():
         time = sort_key(item)  # время начала доклада
-        print(now + delta, time)
-        if now + delta > time:
+        if now + delta > time and n_handler.need_to_send(item['id']):
             text = 'Напоминание:\nВ {0} состоится доклад "{1}".\nЛектор: {2}.\n' \
                    'Не пропустите.'.format(item['start'], item['name'], item['lecturer'])
             for i in ids:
                 bot.send_message(i, text)
+            n_handler.set_flag_false(item['id'])
+        if now > time:
+            n_handler.rm_key(item['id'])
 
 
 scheduler.add_job(get_actual_schedule, 'interval', minutes=1)
