@@ -11,15 +11,20 @@ from advisor import Advisor
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from nothandler import NotificationHandler
+from uplib import UpdatesHandler
 
 
 bot = telebot.TeleBot(TOKEN)
 auth_handler = AuthHandler(DB_PATH)
 advisor = Advisor()
 n_handler = NotificationHandler()
+up_handler = UpdatesHandler(SCHEDULE_PATH, CSV_URL)
 
 scheduler = BackgroundScheduler()
 scheduler.start()
+
+updates = BackgroundScheduler()
+updates.start()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -185,8 +190,16 @@ def get_actual_schedule():
             n_handler.rm_key(item['id'])
 
 
-scheduler.add_job(get_actual_schedule, 'interval', minutes=1)
+def check_updates():
+    ids = auth_handler.get_all_ids()
+    new = up_handler.get_updates()
+    for text in new:
+        for i in ids:
+            bot.send_message(i, text)
 
+
+scheduler.add_job(get_actual_schedule, 'interval', minutes=1)
+updates.add_job(check_updates, 'interval', minutes=1)
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
