@@ -29,6 +29,24 @@ class UpdatesHandler:
 
         wb.save(filename=self._sheet)
 
+    def _reload_sheet(self, ss):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = 'Schedule'
+
+        labels = ['id', 'date', 'start', 'end', 'name', 'lecturer']
+        ws.append(labels)
+
+        i = 2
+        for item in ss:
+            labels = [item['id'], item['date'], item['start'], item['end'], item['name'], item['lecturer']]
+            ws.append(labels)
+            self._id_map[item['id']] = i
+            i += 1
+        self._size = len(ss)
+
+        wb.save(filename=self._sheet)
+
     @staticmethod
     def _compare_ids(old, new):
         """
@@ -121,7 +139,7 @@ class UpdatesHandler:
                         'Доклад прочтет {3}'.format(item['name'], item['start'], item['end'], item['lecturer'])
             result.append(text)
 
-        self._init_sheet()  # обновить таблицу
+        self._reload_sheet(ss)  # обновить таблицу
 
         return result
 
