@@ -95,7 +95,7 @@ class UpdatesHandler:
 
         old_ids = self._id_map.keys()
         new_ids = [item['id'] for item in ss]
-        print(old_ids, new_ids)
+        print(ss)
         l_1, l_2, l_3 = self._compare_ids(old_ids, new_ids)
         print(l_1, l_2, l_3)
 

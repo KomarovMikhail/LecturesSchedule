@@ -1,6 +1,5 @@
 from datetime import datetime
 import pandas as pd
-import config
 
 
 def get_spreadsheet(from_path):
