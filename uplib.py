@@ -84,6 +84,21 @@ class UpdatesHandler:
 
             return result
 
+    def _decline_lecture(self, l_id):
+        info = self._get_info(l_id)
+        text = 'Внимание!\nДоклад "{0}" в {1} отменен.'.format(info['name'], info['start'])
+        self._id_map.pop(l_id)
+        self._size -= 1
+        return text
+
+    def _add_lecture(self, l_id, spreadsheet):
+        info = self._get_info(l_id, spreadsheet)
+        text = 'Внимание!\nВ расписание добавлен новый доклад "{0}", который начнется в {1}. ' \
+               'Докладчик: {2}.'.format(info['name'], info['start'], info['lecturer'])
+        self._id_map[l_id] = self._size + 2
+        self._size += 1
+        return text
+
     def get_updates(self):
         """
         Возвращает готовый текст сообщения для дальнейшей его отправки ботом
@@ -99,19 +114,10 @@ class UpdatesHandler:
         print(l_1, l_2, l_3)
 
         for i in l_1:
-            info = self._get_info(i)
-            text = 'Внимание!\nДоклад "{0}" в {1} отменен.'.format(info['name'], info['start'])
-            result.append(text)
-            self._id_map.pop(i)
-            self._size -= 1
+            result.append(self._decline_lecture(i))
 
         for i in l_2:
-            info = self._get_info(i, ss)
-            text = 'Внимание!\nВ расписание добавлен новый доклад "{0}", который начнется в {1}. ' \
-                   'Докладчик: {2}.'.format(info['name'], info['start'], info['lecturer'])
-            result.append(text)
-            self._id_map[i] = self._size + 2
-            self._size += 1
+            result.append(self._add_lecture(i, ss))
 
         i = 2
         for item in ss:
