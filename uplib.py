@@ -65,7 +65,7 @@ class UpdatesHandler:
 
         return l_1, l_2, l_3
 
-    def _get_info(self, l_id, spreadsheet=None, worksheet=None):
+    def get_lecture_by_id(self, l_id, spreadsheet=None, worksheet=None):
         if spreadsheet is not None:
             for item in spreadsheet:
                 if item['id'] == l_id:
@@ -88,12 +88,12 @@ class UpdatesHandler:
             }
 
     def _decline_lecture(self, l_id, worksheet):
-        info = self._get_info(l_id, worksheet=worksheet)
+        info = self.get_lecture_by_id(l_id, worksheet=worksheet)
         text = 'Внимание!\nДоклад "{0}" в {1} отменен.'.format(info['name'], info['start'])
         return text
 
     def _add_lecture(self, l_id, spreadsheet):
-        info = self._get_info(l_id, spreadsheet=spreadsheet)
+        info = self.get_lecture_by_id(l_id, spreadsheet=spreadsheet)
         text = 'Внимание!\nВ расписание добавлен новый доклад "{0}", который начнется в {1}. ' \
                'Докладчик: {2}.'.format(info['name'], info['start'], info['lecturer'])
         return text
@@ -134,7 +134,7 @@ class UpdatesHandler:
             flag = 0
             if item['id'] not in l_3:
                 continue
-            old_item = self._get_info(item['id'], worksheet=ws)
+            old_item = self.get_lecture_by_id(item['id'], worksheet=ws)
             if item['start'] != old_item['start']:
                 flag = 1
             if item['lecturer'] != old_item['lecturer']:

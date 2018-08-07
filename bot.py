@@ -175,6 +175,11 @@ def callback(call):
             text = 'Вопрос: ' + q['question'] + '\n' + 'Ответ: ' + q['answer']
             bot.send_message(cid, text)
 
+    elif call.data[:13] == 'get_full_info':
+        lid = call.data[13:]
+        lecture = up_handler.get_lecture_by_id(lid)
+        print(lecture)
+
 
 def get_actual_schedule():
     nearest = get_nearest(CSV_URL)
