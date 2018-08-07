@@ -4,9 +4,16 @@ from emoji import *
 
 def generate_menu():
     inline_markup = types.InlineKeyboardMarkup()
-    buttons = ['Показать расписание', 'Найти собеседника', 'Обновить профиль', 'Мой профиль', 'FAQ']
-    for button in buttons:
-        inline_markup.add(types.InlineKeyboardButton(text=button, callback_data=button))
+    buttons = [
+        ['Показать расписание', CLIPBOARD],
+        ['Найти собеседника', SPEECH_BALLOON],
+        ['Обновить профиль', PENCIL],
+        ['Мой профиль', BUST],
+        ['Мое избранное', FIRE],
+        ['FAQ', QUESTION]
+    ]
+    for b in buttons:
+        inline_markup.add(types.InlineKeyboardButton(text=b[1] + b[0], callback_data=b[0]))
     return inline_markup
 
 

@@ -1,1 +1,6 @@
 FIRE = str(b'\xF0\x9F\x94\xA5', 'utf-8')
+SPEECH_BALLOON = str(b'\xF0\x9F\x92\xAC', 'utf-8')
+CLIPBOARD = str(b'\xF0\x9F\x93\x8B', 'utf-8')
+BUST = str(b'\xF0\x9F\x91\xA4', 'utf-8')
+QUESTION = str(b'\xE2\x81\x89', 'utf-8')
+PENCIL = str(b'\xE2\x9C\x8F', 'utf-8')
