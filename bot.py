@@ -94,7 +94,7 @@ def handle_photo(message):
         src = IMG_PATH + str(message.chat.id)
         with open(src, 'wb') as new_file:
             new_file.write(downloaded)
-        bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id), 'rb'))
+        # bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id), 'rb'))
     # except Exception as e:
     #     bot.send_message(message.chat.id, e.args)
 
@@ -106,9 +106,12 @@ def callback(call):
 
     if call.data == 'Показать расписание':
         text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить доклад в "избранное")'.format(FIRE)]
+        bot.send_message(cid, text)
         nearest = get_nearest(CSV_URL)
-        inline_markup = generate_lectures_list(nearest)
-        bot.send_message(cid, text, reply_markup=inline_markup)
+        for l in nearest:
+            text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
+            inline_markup = generate_lectures_list(l)
+            bot.send_message(cid, text, reply_markup=inline_markup)
 
     elif call.data == 'Найти собеседника':
         bot.send_message(cid,

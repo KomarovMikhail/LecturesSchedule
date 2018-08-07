@@ -27,14 +27,12 @@ def generate_answer_buttons():
     return inline_markup
 
 
-def generate_lectures_list(lectures):
+def generate_lectures_list(lecture):
     inline_markup = types.InlineKeyboardMarkup()
-    for lecture in lectures:
-        text = '{0} ({1})'.format(lecture['name'], lecture['start'])
-        callback_data_1 = 'get_full_info{0}'.format(lecture['id'])
-        callback_data_2 = 'add_to_fav{0}'.format(lecture['id'])
-        b_1 = types.InlineKeyboardButton(text=text, callback_data=callback_data_1)
-        b_2 = types.InlineKeyboardButton(text=FIRE, callback_data=callback_data_2)
-        inline_markup.add(b_1, b_2)
+    callback_data_1 = 'get_full_info{0}'.format(lecture['id'])
+    callback_data_2 = 'add_to_fav{0}'.format(lecture['id'])
+    b_1 = types.InlineKeyboardButton(text='Подробнее...', callback_data=callback_data_1)
+    b_2 = types.InlineKeyboardButton(text=FIRE, callback_data=callback_data_2)
+    inline_markup.add(b_1, b_2)
     return inline_markup
 
