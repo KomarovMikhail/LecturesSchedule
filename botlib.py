@@ -18,3 +18,12 @@ def generate_answer_buttons():
     inline_markup.add(b_3)
     return inline_markup
 
+
+def generate_lectures_list(lectures):
+    inline_markup = types.InlineKeyboardMarkup()
+    for lecture in lectures:
+        text = ''
+        callback_data = ''
+        b_1 = types.InlineKeyboardButton(text=text, callback_data=callback_data)
+        b_2 = types.InlineKeyboardButton(text='')
+

@@ -12,6 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from nothandler import NotificationHandler
 from uplib import UpdatesHandler
+from emoji import FIRE
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -104,7 +105,9 @@ def callback(call):
     cid = call.message.chat.id
 
     if call.data == 'Показать расписание':
-        bot.send_message(cid, "Вот тебе расписание")
+        text = ['Расписание ближайших лекций:']
+        nearest = get_nearest(CSV_URL)
+        bot.send_message(cid, FIRE)
 
     elif call.data == 'Найти собеседника':
         bot.send_message(cid,
