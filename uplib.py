@@ -65,53 +65,51 @@ class UpdatesHandler:
 
         return l_1, l_2, l_3
 
-    def _get_info(self, l_id, ss=None):
-        if ss is not None:
-            for item in ss:
+    def _get_info(self, l_id, spreadsheet=None, worksheet=None):
+        if spreadsheet is not None:
+            for item in spreadsheet:
                 if item['id'] == l_id:
                     return item
         else:
-            wb = openpyxl.load_workbook(filename=self._sheet)
-            ws = wb['Schedule']
+            if worksheet is None:
+                wb = openpyxl.load_workbook(filename=self._sheet)
+                ws = wb['Schedule']
+            else:
+                ws = worksheet
+
             row = str(self._id_map[l_id])
-            result = {}
+            return {
+                'id': ws['A' + row].value,
+                'date': ws['B' + row].value,
+                'start': ws['C' + row].value,
+                'end': ws['D' + row].value,
+                'name': ws['E' + row].value,
+                'lecturer': ws['F' + row].value
+            }
 
-            result['id'] = ws['A' + row].value
-            result['date'] = ws['B' + row].value
-            result['start'] = ws['C' + row].value
-            result['end'] = ws['D' + row].value
-            result['name'] = ws['E' + row].value
-            result['lecturer'] = ws['F' + row].value
-
-            return result
-
-    def _decline_lecture(self, l_id):
-        info = self._get_info(l_id)
+    def _decline_lecture(self, l_id, worksheet):
+        info = self._get_info(l_id, worksheet=worksheet)
         text = 'Внимание!\nДоклад "{0}" в {1} отменен.'.format(info['name'], info['start'])
-        # self._id_map.pop(l_id)
-        # self._size -= 1
         return text
 
     def _add_lecture(self, l_id, spreadsheet):
-        info = self._get_info(l_id, spreadsheet)
+        info = self._get_info(l_id, spreadsheet=spreadsheet)
         text = 'Внимание!\nВ расписание добавлен новый доклад "{0}", который начнется в {1}. ' \
                'Докладчик: {2}.'.format(info['name'], info['start'], info['lecturer'])
-        # self._id_map[l_id] = self._size + 2
-        # self._size += 1
         return text
 
-    def _get_item_by_id(self, worksheet, l_id):
-        for i in range(2, self._size + 2):
-            row = str(i)
-            if worksheet['A' + row].value == l_id:
-                return {
-                    'id': worksheet['A' + row].value,
-                    'date': worksheet['B' + row].value,
-                    'start': worksheet['C' + row].value,
-                    'end': worksheet['D' + row].value,
-                    'name': worksheet['E' + row].value,
-                    'lecturer': worksheet['F' + row].value
-                }
+    # def _get_item_by_id(self, worksheet, l_id):
+    #     for i in range(2, self._size + 2):
+    #         row = str(i)
+    #         if worksheet['A' + row].value == l_id:
+    #             return {
+    #                 'id': worksheet['A' + row].value,
+    #                 'date': worksheet['B' + row].value,
+    #                 'start': worksheet['C' + row].value,
+    #                 'end': worksheet['D' + row].value,
+    #                 'name': worksheet['E' + row].value,
+    #                 'lecturer': worksheet['F' + row].value
+    #             }
 
     def get_updates(self):
         """
@@ -125,10 +123,9 @@ class UpdatesHandler:
         old_ids = self._id_map.keys()
         new_ids = [item['id'] for item in ss]
         l_1, l_2, l_3 = self._compare_ids(old_ids, new_ids)
-        print(l_1, l_2, l_3)
 
         for i in l_1:
-            result.append(self._decline_lecture(i))
+            result.append(self._decline_lecture(i, ws))
 
         for i in l_2:
             result.append(self._add_lecture(i, ss))
@@ -137,7 +134,7 @@ class UpdatesHandler:
             flag = 0
             if item['id'] not in l_3:
                 continue
-            old_item = self._get_item_by_id(ws, item['id'])
+            old_item = self._get_info(item['id'], worksheet=ws)
             if item['start'] != old_item['start']:
                 flag = 1
             if item['lecturer'] != old_item['lecturer']:
@@ -162,7 +159,7 @@ class UpdatesHandler:
                         'Доклад прочтет {3}'.format(item['name'], item['start'], item['end'], item['lecturer'])
             result.append(text)
 
-        self._reload_sheet(ss)  # обновить таблицу
+        self._reload_sheet(ss)
 
         return result
 
