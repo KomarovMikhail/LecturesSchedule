@@ -38,6 +38,7 @@ class UpdatesHandler:
         ws.append(labels)
 
         i = 2
+        self._id_map = {}
         for item in ss:
             labels = [item['id'], item['date'], item['start'], item['end'], item['name'], item['lecturer']]
             ws.append(labels)
@@ -87,17 +88,30 @@ class UpdatesHandler:
     def _decline_lecture(self, l_id):
         info = self._get_info(l_id)
         text = 'Внимание!\nДоклад "{0}" в {1} отменен.'.format(info['name'], info['start'])
-        self._id_map.pop(l_id)
-        self._size -= 1
+        # self._id_map.pop(l_id)
+        # self._size -= 1
         return text
 
     def _add_lecture(self, l_id, spreadsheet):
         info = self._get_info(l_id, spreadsheet)
         text = 'Внимание!\nВ расписание добавлен новый доклад "{0}", который начнется в {1}. ' \
                'Докладчик: {2}.'.format(info['name'], info['start'], info['lecturer'])
-        self._id_map[l_id] = self._size + 2
-        self._size += 1
+        # self._id_map[l_id] = self._size + 2
+        # self._size += 1
         return text
+
+    def _get_item_by_id(self, worksheet, l_id):
+        for i in range(2, self._size + 2):
+            row = str(i)
+            if worksheet['A' + row].value == l_id:
+                return {
+                    'id': worksheet['A' + row].value,
+                    'date': worksheet['B' + row].value,
+                    'start': worksheet['C' + row].value,
+                    'end': worksheet['D' + row].value,
+                    'name': worksheet['E' + row].value,
+                    'lecturer': worksheet['F' + row].value
+                }
 
     def get_updates(self):
         """
@@ -119,20 +133,19 @@ class UpdatesHandler:
         for i in l_2:
             result.append(self._add_lecture(i, ss))
 
-        i = 2
         for item in ss:
             flag = 0
             if item['id'] not in l_3:
                 continue
-            if item['start'] != ws['C' + str(i)].value:
+            old_item = self._get_item_by_id(ws, item['id'])
+            if item['start'] != old_item['start']:
                 flag = 1
-            if item['lecturer'] != ws['F' + str(i)].value:
+            if item['lecturer'] != old_item['lecturer']:
                 if flag == 0:
                     flag = 2
                 else:
                     flag = 3
 
-            i += 1
             text = 'Внимание!\n'
             if flag == 0:
                 continue
