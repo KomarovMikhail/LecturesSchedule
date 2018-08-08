@@ -5,6 +5,7 @@ click==6.7
 et-xmlfile==1.0.1
 Flask==1.0.2
 funcsigs==1.0.2
+futures==3.2.0
 idna==2.7
 itsdangerous==0.24
 jdcal==1.4
@@ -14,6 +15,7 @@ MarkupSafe==1.0
 numpy==1.14.5
 openpyxl==2.5.4
 pandas==0.23.3
+psycopg2-binary==2.7.5
 pyTelegramBotAPI==3.6.3
 python-dateutil==2.7.3
 pytz==2018.5
