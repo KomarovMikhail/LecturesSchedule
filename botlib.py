@@ -1,5 +1,5 @@
 from telebot import types
-from emoji import *
+from constants.emoji import *
 
 
 def generate_menu():

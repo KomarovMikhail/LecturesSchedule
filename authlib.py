@@ -1,6 +1,6 @@
 import openpyxl
 import random
-from config import IMG_PATH
+from constants.config import IMG_PATH
 
 
 class AuthHandler:

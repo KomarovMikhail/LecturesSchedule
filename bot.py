@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from config import *
+from constants.config import *
 import telebot
 from sslib import get_nearest, get_faq, sort_key
 import os
@@ -12,7 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from nothandler import NotificationHandler
 from uplib import UpdatesHandler
-from emoji import *
+from constants.emoji import *
 import psycopg2
 from constants.queries import *
 
@@ -29,24 +29,23 @@ scheduler.start()
 updates = BackgroundScheduler()
 updates.start()
 
-DATABASE_URL = os.environ['DATABASE_URL']
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
-cursor = conn.cursor()
-
-cursor.execute(CREATE)
-cursor.execute(INSERT.format("Some another message"))
-conn.commit()
-
-cursor.execute(SELECT)
-rows = cursor.fetchall()
-for msg in rows:
-    print(msg[0])
-
-cursor.execute(DROP)
-conn.commit()
-
-conn.close()
+# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+#
+# cursor = conn.cursor()
+#
+# cursor.execute(CREATE)
+# cursor.execute(INSERT.format("Some another message"))
+# conn.commit()
+#
+# cursor.execute(SELECT)
+# rows = cursor.fetchall()
+# for msg in rows:
+#     print(msg[0])
+#
+# cursor.execute(DROP)
+# conn.commit()
+#
+# conn.close()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -201,6 +200,10 @@ def callback(call):
         lecture = up_handler.get_lecture_by_id(lid)
         print(lecture)
         # добавить описание и отправку сообщения
+
+    elif call.data[:10] == 'add_to_fav':
+        lid = call.data[10:]
+        print('Got id: ' + lid)
 
 
 def get_actual_schedule():

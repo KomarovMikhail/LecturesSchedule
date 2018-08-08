@@ -1,4 +1,6 @@
-# -*- coding: utf-8 -*-
+import os
+
+
 TOKEN = '588048354:AAFgl8K6V4JSoc9Cs3v4PlgNT2zfNHg0XcU'
 
 # CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaIuizRlU2hODjbpXeydGqq67f5-cU1G7-7xIgMs7m9bpiAMRsO6pt27_gFKozauiudddO4pn_3HA8/pub?output=csv'
@@ -12,3 +14,5 @@ DB_PATH = 'db/db.xlsx'
 IMG_PATH = 'imgs/'
 
 SCHEDULE_PATH = 'actual_schedule/schedule.xlsx'
+
+DATABASE_URL = os.environ['DATABASE_URL']
