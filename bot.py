@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from nothandler import NotificationHandler
 from uplib import UpdatesHandler
 from emoji import *
+import psycopg2
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -27,6 +28,20 @@ scheduler.start()
 updates = BackgroundScheduler()
 updates.start()
 
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+cursor = conn.cursor()
+
+cursor.execute("DROP TABLE storage")
+cursor.execute("CREATE TABLE storage (msg TEXT)")
+cursor.execute("INSERT INTO storage(msg) VALUES('{}')".format("Some message"))
+conn.commit()
+
+cursor.execute("""SELECT * FROM storage""")
+rows = cursor.fetchall()
+for msg in rows:
+    print(msg[0])
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
@@ -179,6 +194,7 @@ def callback(call):
         lid = call.data[13:]
         lecture = up_handler.get_lecture_by_id(lid)
         print(lecture)
+        # добавить описание и отправку сообщения
 
 
 def get_actual_schedule():
