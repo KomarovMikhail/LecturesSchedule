@@ -33,7 +33,6 @@ conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 cursor = conn.cursor()
 
-cursor.execute("DROP TABLE storage")
 cursor.execute("CREATE TABLE storage (msg TEXT)")
 cursor.execute("INSERT INTO storage(msg) VALUES('{}')".format("Some message"))
 conn.commit()
@@ -42,6 +41,9 @@ cursor.execute("""SELECT * FROM storage""")
 rows = cursor.fetchall()
 for msg in rows:
     print(msg[0])
+
+cursor.execute("DROP TABLE storage")
+conn.commit()
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
