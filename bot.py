@@ -13,8 +13,7 @@ from datetime import datetime, timedelta
 from nothandler import NotificationHandler
 from uplib import UpdatesHandler
 from constants.emoji import *
-import psycopg2
-from constants.queries import *
+from favlib import *
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -29,23 +28,9 @@ scheduler.start()
 updates = BackgroundScheduler()
 updates.start()
 
-# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-#
-# cursor = conn.cursor()
-#
-# cursor.execute(CREATE)
-# cursor.execute(INSERT.format("Some another message"))
-# conn.commit()
-#
-# cursor.execute(SELECT)
-# rows = cursor.fetchall()
-# for msg in rows:
-#     print(msg[0])
-#
-# cursor.execute(DROP)
-# conn.commit()
-#
-# conn.close()
+create_favorite_db()
+add_to_favorite(12, 13)
+drop_favorite_db()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -203,7 +188,7 @@ def callback(call):
 
     elif call.data[:10] == 'add_to_fav':
         lid = call.data[10:]
-        print('Got id: ' + lid)
+        add_to_favorite(cid, lid)
 
 
 def get_actual_schedule():
