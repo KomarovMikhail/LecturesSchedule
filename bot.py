@@ -14,6 +14,7 @@ from nothandler import NotificationHandler
 from uplib import UpdatesHandler
 from emoji import *
 import psycopg2
+from constants.queries import *
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -33,17 +34,20 @@ conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 cursor = conn.cursor()
 
-cursor.execute("CREATE TABLE storage (msg TEXT)")
-cursor.execute("INSERT INTO storage(msg) VALUES('{}')".format("Some message"))
+cursor.execute(CREATE)
+cursor.execute(INSERT.format("Some another message"))
 conn.commit()
 
-cursor.execute("""SELECT * FROM storage""")
+cursor.execute(SELECT)
 rows = cursor.fetchall()
 for msg in rows:
     print(msg[0])
 
-cursor.execute("DROP TABLE storage")
+cursor.execute(DROP)
 conn.commit()
+
+conn.close()
+
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
