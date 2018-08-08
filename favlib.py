@@ -23,7 +23,7 @@ def add_to_favorite(cid, lid):
     print("test:")
     print(rows)
     for msg in rows:
-        print(msg[0])
+        print(type(msg[0]))
     conn.commit()
     conn.close()
 
@@ -35,12 +35,14 @@ def drop_favorite_db():
     conn.commit()
     conn.close()
 
-    # cursor.execute(SELECT)
-    # rows = cursor.fetchall()
-    # for msg in rows:
-    #     print(msg[0])
-    #
-    # cursor.execute(DROP)
-    # conn.commit()
-    #
-    # conn.close()
+
+def select_all_test():
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cursor = conn.cursor()
+    cursor.execute(SELECT_ALL)
+    rows = cursor.fetchall()
+    print(rows)
+    for msg in rows:
+        print(msg[0])
+    conn.commit()
+    conn.close()

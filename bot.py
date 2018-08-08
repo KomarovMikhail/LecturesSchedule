@@ -30,7 +30,6 @@ updates.start()
 
 create_favorite_db()
 add_to_favorite(12, 13)
-drop_favorite_db()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -189,6 +188,7 @@ def callback(call):
     elif call.data[:10] == 'add_to_fav':
         lid = call.data[10:]
         add_to_favorite(cid, lid)
+        select_all_test()
 
 
 def get_actual_schedule():
