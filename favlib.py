@@ -6,6 +6,7 @@ from constants.config import DATABASE_URL
 def create_favorite_db():
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cursor = conn.cursor()
+    cursor.execute(IF_DROP)
     cursor.execute(CREATE)
     conn.commit()
     conn.close()
@@ -22,7 +23,7 @@ def add_to_favorite(cid, lid):
     print("test:")
     print(rows)
     for msg in rows:
-        print('Got: ' + msg[0])
+        print(msg[0])
     conn.commit()
     conn.close()
 
