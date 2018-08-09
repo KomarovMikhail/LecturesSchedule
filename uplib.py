@@ -87,6 +87,24 @@ class UpdatesHandler:
                 'lecturer': ws['F' + row].value
             }
 
+    def get_lectures_by_ids(self, lids, worksheet=None):
+        if worksheet is None:
+            wb = openpyxl.load_workbook(filename=self._sheet)
+            ws = wb['Schedule']
+        else:
+            ws = worksheet
+        result = []
+        for lid in lids:
+            row = str(self._id_map[lid])
+            result.append({
+                'id': ws['A' + row].value,
+                'date': ws['B' + row].value,
+                'start': ws['C' + row].value,
+                'end': ws['D' + row].value,
+                'name': ws['E' + row].value,
+                'lecturer': ws['F' + row].value
+            })
+
     def _decline_lecture(self, l_id, worksheet):
         info = self.get_lecture_by_id(l_id, worksheet=worksheet)
         text = 'Внимание!\nДоклад "{0}" в {1} отменен.'.format(info['name'], info['start'])

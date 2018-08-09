@@ -190,7 +190,14 @@ def callback(call):
         lid = call.data[10:]
         add_to_favorite(cid, lid)
         lecture = up_handler.get_lecture_by_id(lid)
-        text = 'Доклад "{0}" добавлен в "избранное".'.format(lecture['name'])
+        text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
+        bot.send_message(cid, text)
+
+    elif call.data[:12] == 'rem_from_fav':
+        lid = call.data[12:]
+        remove_from_favorite(cid, lid)
+        lecture = up_handler.get_lecture_by_id(lid)
+        text = 'Доклад "{0}" убран из избранного.'.format(lecture['name'])
         bot.send_message(cid, text)
 
     elif call.data == 'Мое избранное':
@@ -198,7 +205,13 @@ def callback(call):
         if lids is None:
             bot.send_message(cid, 'У вас пока нет избранных докладов.')
         else:
-            bot.send_message(cid, 'Избранные доклады:\n' + ':'.join(lids))
+            bot.send_message(cid, 'Избранные доклады:\n'
+                                  '(Нажми {0} чтобы уборать доклад из избранного)'.format(CROSS_MARK))
+            lectures = up_handler.get_lectures_by_ids(lids)
+            for l in lectures:
+                text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
+                inline_markup = generate_favorite_list(l)
+                bot.send_message(cid, text, reply_markup=inline_markup)
 
 
 def get_actual_schedule():

@@ -28,6 +28,24 @@ def add_to_favorite(cid, lid):
     conn.close()
 
 
+def remove_from_favorite(cid, lid):
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cursor = conn.cursor()
+
+    cursor.execute(SELECT_BY_ID.format(cid))
+    data = cursor.fetchall()
+    if len(data) != 0:
+        old_ids = data[0][0].split(',')
+        try:
+            old_ids.remove(lid)
+            new_ids = ','.join(old_ids)
+            cursor.execute(UPDATE.format(cid, new_ids))
+        except ValueError:
+            pass
+    conn.commit()
+    conn.close()
+
+
 def select_by_id(cid):
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cursor = conn.cursor()

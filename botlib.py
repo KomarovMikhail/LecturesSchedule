@@ -36,3 +36,13 @@ def generate_lectures_list(lecture):
     inline_markup.add(b_1, b_2)
     return inline_markup
 
+
+def generate_favorite_list(lecture):
+    inline_markup = types.InlineKeyboardMarkup()
+    callback_data_1 = 'get_full_info{0}'.format(lecture['id'])
+    callback_data_2 = 'rem_from_fav{0}'.format(lecture['id'])
+    b_1 = types.InlineKeyboardButton(text='Подробнее...', callback_data=callback_data_1)
+    b_2 = types.InlineKeyboardButton(text=CROSS_MARK, callback_data=callback_data_2)
+    inline_markup.add(b_1, b_2)
+    return inline_markup
+
