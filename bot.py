@@ -188,21 +188,27 @@ def callback(call):
 
     elif call.data[:10] == 'add_to_fav':
         lid = call.data[10:]
-        add_to_favorite(cid, lid)
-        lecture = up_handler.get_lecture_by_id(lid)
-        text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
-        bot.send_message(cid, text)
+        try:
+            add_to_favorite(cid, lid)
+            lecture = up_handler.get_lecture_by_id(lid)
+            text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
+            bot.send_message(cid, text)
+        except ValueError:
+            bot.send_message(cid, 'Этот доклад уже добавлен в избранное.')
 
     elif call.data[:12] == 'rem_from_fav':
         lid = call.data[12:]
-        remove_from_favorite(cid, lid)
-        lecture = up_handler.get_lecture_by_id(lid)
-        text = 'Доклад "{0}" убран из избранного.'.format(lecture['name'])
-        bot.send_message(cid, text)
+        try:
+            remove_from_favorite(cid, lid)
+            lecture = up_handler.get_lecture_by_id(lid)
+            text = 'Доклад "{0}" удален из избранного.'.format(lecture['name'])
+            bot.send_message(cid, text)
+        except ValueError:
+            bot.send_message(cid, 'Этот доклад уже удален из избранного.')
 
     elif call.data == 'Мое избранное':
         lids = select_by_id(cid)
-        if lids is None:
+        if len(lids) == 0:
             bot.send_message(cid, 'У вас пока нет избранных докладов.')
         else:
             bot.send_message(cid, 'Избранные доклады:\n'
