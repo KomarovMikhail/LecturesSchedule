@@ -104,6 +104,7 @@ class UpdatesHandler:
                 'name': ws['E' + row].value,
                 'lecturer': ws['F' + row].value
             })
+        return result
 
     def _decline_lecture(self, l_id, worksheet):
         info = self.get_lecture_by_id(l_id, worksheet=worksheet)
