@@ -207,7 +207,9 @@ def callback(call):
         else:
             bot.send_message(cid, 'Избранные доклады:\n'
                                   '(Нажми {0} чтобы уборать доклад из избранного)'.format(CROSS_MARK))
+            print(lids)
             lectures = up_handler.get_lectures_by_ids(lids)
+            print(lectures)
             for l in lectures:
                 text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
                 inline_markup = generate_favorite_list(l)
