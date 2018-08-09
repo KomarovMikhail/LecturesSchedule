@@ -195,7 +195,10 @@ def callback(call):
 
     elif call.data == 'Мое избранное':
         lids = select_by_id(cid)
-        bot.send_message(cid, 'Избранные доклады:\n' + ':'.join(lids))
+        if lids is None:
+            bot.send_message(cid, 'У вас пока нет избранных докладов.')
+        else:
+            bot.send_message(cid, 'Избранные доклады:\n' + ':'.join(lids))
 
 
 def get_actual_schedule():
