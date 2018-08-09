@@ -29,8 +29,8 @@ updates = BackgroundScheduler()
 updates.start()
 
 create_favorite_db()
-add_to_favorite(12, 13)
-select_all_test()
+# add_to_favorite(12, 13)
+# select_all_test()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -189,7 +189,13 @@ def callback(call):
     elif call.data[:10] == 'add_to_fav':
         lid = call.data[10:]
         add_to_favorite(cid, lid)
-        select_all_test()
+        lecture = up_handler.get_lecture_by_id(lid)
+        text = 'Доклад "{0}" добавлен в "избранное".'.format(lecture['name'])
+        bot.send_message(cid, text)
+
+    elif call.data == 'Мое избранное':
+        lids = select_by_id(cid)
+        bot.send_message(cid, 'Избранные доклады:\n' + ':'.join(lids))
 
 
 def get_actual_schedule():
