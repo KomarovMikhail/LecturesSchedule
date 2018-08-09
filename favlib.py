@@ -44,6 +44,8 @@ def remove_from_favorite(cid, lid):
         else:
             new_ids = ','.join(old_ids)
             cursor.execute(UPDATE.format(cid, new_ids))
+    else:
+        raise ValueError
     conn.commit()
     conn.close()
 
