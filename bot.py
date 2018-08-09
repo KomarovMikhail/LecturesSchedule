@@ -30,6 +30,7 @@ updates.start()
 
 create_favorite_db()
 add_to_favorite(12, 13)
+select_all_test()
 
 
 @bot.message_handler(commands=['start', 'help'])
