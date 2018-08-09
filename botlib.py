@@ -2,6 +2,13 @@ from telebot import types
 from constants.emoji import *
 
 
+def if_menu(text):
+    if text == 'Меню' or text == 'меню' or text == 'Menu' or text == 'menu':
+        return True
+    else:
+        return False
+
+
 def generate_menu():
     inline_markup = types.InlineKeyboardMarkup()
     buttons = [
@@ -46,3 +53,10 @@ def generate_favorite_list(lecture):
     inline_markup.add(b_1, b_2)
     return inline_markup
 
+
+def generate_show_more(lecture):
+    inline_markup = types.InlineKeyboardMarkup()
+    callback_data = 'get_full_info{0}'.format(lecture['id'])
+    button = types.InlineKeyboardButton(text='Подробнее...', callback_data=callback_data)
+    inline_markup.add(button)
+    return inline_markup

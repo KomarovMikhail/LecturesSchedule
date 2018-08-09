@@ -15,6 +15,8 @@ def get_spreadsheet(from_path):
         buf['end'] = str(row[3])
         buf['name'] = str(row[4])
         buf['lecturer'] = str(row[5])
+        buf['where'] = str(row[6])
+        buf['about'] = str(row[7])
         result.append(buf)
 
     return result

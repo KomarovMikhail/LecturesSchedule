@@ -29,8 +29,6 @@ updates = BackgroundScheduler()
 updates.start()
 
 create_favorite_db()
-# add_to_favorite(12, 13)
-# select_all_test()
 
 
 @bot.message_handler(commands=['start', 'help'])
@@ -70,7 +68,7 @@ def get_schedule(message):
     bot.send_message(message.chat.id, text)
 
 
-@bot.message_handler(func=lambda message: message.text == 'Меню', content_types=['text'])
+@bot.message_handler(func=lambda message: if_menu(message.text), content_types=['text'])
 def menu(message):
     text = 'Что я могу для тебя сделать?'
     inline_markup = generate_menu()
@@ -183,8 +181,10 @@ def callback(call):
     elif call.data[:13] == 'get_full_info':
         lid = call.data[13:]
         lecture = up_handler.get_lecture_by_id(lid)
-        print(lecture)
-        # добавить описание и отправку сообщения
+        text = '{0} (Читает {1})\nМесто проведения: {2}\nВремя: {3}\n' \
+               'Краткое описание: {4}'.format(lecture['name'], lecture['lecturer'],
+                                              lecture['where'], lecture['start'], lecture['about'])
+        bot.send_message(cid, text)
 
     elif call.data[:10] == 'add_to_fav':
         lid = call.data[10:]
@@ -232,10 +232,11 @@ def get_actual_schedule():
     for item in n_handler.get_data():
         time = sort_key(item)  # время начала доклада
         if now + delta > time and n_handler.need_to_send(item['id']):
-            text = 'Напоминание:\nВ {0} состоится доклад "{1}".\nЛектор: {2}.\n' \
-                   'Не пропустите.'.format(item['start'], item['name'], item['lecturer'])
+            text = 'Напоминание:\nВ {0} состоится доклад "{1}".\n' \
+                   'Не пропустите.'.format(item['start'], item['name'])
+            inline_markup = generate_show_more(item)
             for i in ids:
-                bot.send_message(i, text)
+                bot.send_message(i, text, reply_markup=inline_markup)
             n_handler.set_flag_false(item['id'])
         if now > time:
             n_handler.rm_key(item['id'])

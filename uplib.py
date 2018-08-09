@@ -15,13 +15,14 @@ class UpdatesHandler:
         ws = wb.active
         ws.title = 'Schedule'
 
-        labels = ['id', 'date', 'start', 'end', 'name', 'lecturer']
+        labels = ['id', 'date', 'start', 'end', 'name', 'lecturer', 'where', 'about']
         ws.append(labels)
 
         ss = get_spreadsheet(self._csv)
         i = 2
         for item in ss:
-            labels = [item['id'], item['date'], item['start'], item['end'], item['name'], item['lecturer']]
+            labels = [item['id'], item['date'], item['start'], item['end'],
+                      item['name'], item['lecturer'], item['where'], item['about']]
             ws.append(labels)
             self._id_map[item['id']] = i
             i += 1
@@ -34,13 +35,14 @@ class UpdatesHandler:
         ws = wb.active
         ws.title = 'Schedule'
 
-        labels = ['id', 'date', 'start', 'end', 'name', 'lecturer']
+        labels = ['id', 'date', 'start', 'end', 'name', 'lecturer', 'where', 'about']
         ws.append(labels)
 
         i = 2
         self._id_map = {}
         for item in ss:
-            labels = [item['id'], item['date'], item['start'], item['end'], item['name'], item['lecturer']]
+            labels = [item['id'], item['date'], item['start'], item['end'],
+                      item['name'], item['lecturer'], item['where'], item['about']]
             ws.append(labels)
             self._id_map[item['id']] = i
             i += 1
@@ -84,7 +86,9 @@ class UpdatesHandler:
                 'start': ws['C' + row].value,
                 'end': ws['D' + row].value,
                 'name': ws['E' + row].value,
-                'lecturer': ws['F' + row].value
+                'lecturer': ws['F' + row].value,
+                'where': ws['G' + row].value,
+                'about': ws['H' + row].value
             }
 
     def get_lectures_by_ids(self, lids, worksheet=None):
@@ -102,7 +106,9 @@ class UpdatesHandler:
                 'start': ws['C' + row].value,
                 'end': ws['D' + row].value,
                 'name': ws['E' + row].value,
-                'lecturer': ws['F' + row].value
+                'lecturer': ws['F' + row].value,
+                'where': ws['G' + row].value,
+                'about': ws['H' + row].value
             })
         return result
 
@@ -116,19 +122,6 @@ class UpdatesHandler:
         text = 'Внимание!\nВ расписание добавлен новый доклад "{0}", который начнется в {1}. ' \
                'Докладчик: {2}.'.format(info['name'], info['start'], info['lecturer'])
         return text
-
-    # def _get_item_by_id(self, worksheet, l_id):
-    #     for i in range(2, self._size + 2):
-    #         row = str(i)
-    #         if worksheet['A' + row].value == l_id:
-    #             return {
-    #                 'id': worksheet['A' + row].value,
-    #                 'date': worksheet['B' + row].value,
-    #                 'start': worksheet['C' + row].value,
-    #                 'end': worksheet['D' + row].value,
-    #                 'name': worksheet['E' + row].value,
-    #                 'lecturer': worksheet['F' + row].value
-    #             }
 
     def get_updates(self):
         """
