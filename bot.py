@@ -113,7 +113,7 @@ def callback(call):
         nearest = get_nearest(CSV_URL)
         for l in nearest:
             text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
-            inline_markup = generate_lectures_list(l)
+            inline_markup = generate_lectures_list(l['id'])
             bot.send_message(cid, text, reply_markup=inline_markup)
 
     elif call.data == 'Найти собеседника':
@@ -216,7 +216,7 @@ def callback(call):
             lectures = up_handler.get_lectures_by_ids(lids)
             for l in lectures:
                 text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
-                inline_markup = generate_favorite_list(l)
+                inline_markup = generate_favorite_list(l['id'])
                 bot.send_message(cid, text, reply_markup=inline_markup)
 
 
@@ -234,7 +234,7 @@ def get_actual_schedule():
         if now + delta > time and n_handler.need_to_send(item['id']):
             text = 'Напоминание:\nВ {0} состоится доклад "{1}".\n' \
                    'Не пропустите.'.format(item['start'], item['name'])
-            inline_markup = generate_show_more(item)
+            inline_markup = generate_show_more(item['id'])
             for i in ids:
                 bot.send_message(i, text, reply_markup=inline_markup)
             n_handler.set_flag_false(item['id'])
@@ -244,10 +244,14 @@ def get_actual_schedule():
 
 def check_updates():
     ids = auth_handler.get_all_ids()
-    new = up_handler.get_updates()
-    for text in new:
+    declined, added, changed = up_handler.get_updates()
+    for item in declined:
         for i in ids:
-            bot.send_message(i, text)
+            bot.send_message(i, item)
+    for item in added:
+        inline_markup = generate_show_more(item[1])
+        for i in ids:
+            bot.send_message(i, item[0], reply_markup=inline_markup)
 
 
 scheduler.add_job(get_actual_schedule, 'interval', minutes=1)

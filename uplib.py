@@ -67,10 +67,10 @@ class UpdatesHandler:
 
         return l_1, l_2, l_3
 
-    def get_lecture_by_id(self, l_id, spreadsheet=None, worksheet=None):
+    def get_lecture_by_id(self, lid, spreadsheet=None, worksheet=None):
         if spreadsheet is not None:
             for item in spreadsheet:
-                if item['id'] == l_id:
+                if item['id'] == lid:
                     return item
         else:
             if worksheet is None:
@@ -79,7 +79,7 @@ class UpdatesHandler:
             else:
                 ws = worksheet
 
-            row = str(self._id_map[l_id])
+            row = str(self._id_map[lid])
             return {
                 'id': ws['A' + row].value,
                 'date': ws['B' + row].value,
@@ -112,16 +112,22 @@ class UpdatesHandler:
             })
         return result
 
-    def _decline_lecture(self, l_id, worksheet):
-        info = self.get_lecture_by_id(l_id, worksheet=worksheet)
+    def _decline_lecture(self, lid, worksheet):
+        info = self.get_lecture_by_id(lid, worksheet=worksheet)
         text = 'Внимание!\nДоклад "{0}" в {1} отменен.'.format(info['name'], info['start'])
         return text
 
-    def _add_lecture(self, l_id, spreadsheet):
-        info = self.get_lecture_by_id(l_id, spreadsheet=spreadsheet)
+    def _add_lecture(self, lid, spreadsheet):
+        info = self.get_lecture_by_id(lid, spreadsheet=spreadsheet)
         text = 'Внимание!\nВ расписание добавлен новый доклад "{0}", который начнется в {1}. ' \
                'Докладчик: {2}.'.format(info['name'], info['start'], info['lecturer'])
         return text
+
+    @staticmethod
+    def _if_changed(old, new):
+        return new['start'] != old['start'] or new['end'] != old['end'] or new['date'] != old['date'] or \
+               new['name'] != old['name'] or new['lecturer'] != old['lecturer'] or new['where'] != old['where'] or \
+               new['about'] != old['about']
 
     def get_updates(self):
         """
@@ -130,48 +136,27 @@ class UpdatesHandler:
         ss = get_spreadsheet(self._csv)
         wb = openpyxl.load_workbook(filename=self._sheet)
         ws = wb['Schedule']
-        result = []
+        declined, added, changed = [], [], []
 
         old_ids = self._id_map.keys()
         new_ids = [item['id'] for item in ss]
         l_1, l_2, l_3 = self._compare_ids(old_ids, new_ids)
 
         for i in l_1:
-            result.append(self._decline_lecture(i, ws))
+            declined.append(self._decline_lecture(i, ws))
 
         for i in l_2:
-            result.append(self._add_lecture(i, ss))
+            added.append((self._add_lecture(i, ss), i))
 
         for item in ss:
-            flag = 0
             if item['id'] not in l_3:
                 continue
             old_item = self.get_lecture_by_id(item['id'], worksheet=ws)
-            if item['start'] != old_item['start']:
-                flag = 1
-            if item['lecturer'] != old_item['lecturer']:
-                if flag == 0:
-                    flag = 2
-                else:
-                    flag = 3
-
-            text = 'Внимание!\n'
-            if flag == 0:
-                continue
-            if flag == 1:
-                text += 'Время начала доклада "{0}" изменилось.\n' \
-                        'Доклад начнется в {1} и закончится в {2}.'.format(item['name'], item['start'], item['end'])
-            if flag == 2:
-                text += 'Доклад "{0}" будет читать другой лектор.\n' \
-                        'Доклад прочтет {1}'.format(item['name'], item['lecturer'])
-            if flag == 3:
-                text += 'Время начала доклада "{0}" изменилось.\n' \
-                        'Доклад начнется в {1} и закончится в {2}.\n' \
-                        'Также изменился изменился докладчик.\n' \
-                        'Доклад прочтет {3}'.format(item['name'], item['start'], item['end'], item['lecturer'])
-            result.append(text)
+            if self._if_changed(old_item, item):
+                text = 'Внимание!\nИнформация о докладе "{0}" изменилась'.format(item['name'])
+                changed.append((text, item['id']))
 
         self._reload_sheet(ss)
 
-        return result
+        return declined, added, changed
 
