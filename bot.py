@@ -46,6 +46,7 @@ def handle_start_help(message):
 @bot.message_handler(commands=['test'])
 def test_db(message):
     users = auth_handler.get_users()
+    print(auth_handler.get_all_ids())
     if len(users) == 0:
         bot.send_message(message.chat.id, "Нет зарегестрированных пользователей")
     else:

@@ -1,6 +1,8 @@
 import openpyxl
 import random
 from constants.config import IMG_PATH
+import psycopg2
+from constants.queries import *
 
 
 class AuthHandler:
@@ -11,22 +13,17 @@ class AuthHandler:
         self._init_db()
 
     def _init_db(self):
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = 'Participants'
-
-        labels = ['id', 'username', 'name', 'job', 'interests', 'is_active', 'photo']
-        ws.append(labels)
+        conn = psycopg2.connect(self._db_path, sslmode='require')
+        cursor = conn.cursor()
+        cursor.execute(IF_DROP_PARTICIPANTS)
+        cursor.execute(CREATE_PARTICIPANTS)
 
         # test labels
-        # labels = [1, 'username1', 'name1', 'job1', 'interests1', True, None]
-        # ws.append(labels)
-        # self._auth_num += 1
-        # labels = [2, 'username2', 'name2', 'job2', 'interests2', True, None]
-        # ws.append(labels)
-        # self._auth_num += 1
+        cursor.execute(INSERT_PARTICIPANTS.format(1, 'username1', 'name1', 'job1', 'interests1', 'TRUE', None))
+        cursor.execute(INSERT_PARTICIPANTS.format(2, 'username2', 'name2', 'job2', 'interests2', 'TRUE', None))
 
-        wb.save(filename=self._db_path)
+        conn.commit()
+        conn.close()
 
     def _increment_step(self, client_id):
         self._auth_queue[client_id]['step'] += 1
@@ -41,27 +38,20 @@ class AuthHandler:
         self._auth_queue[client_id]['data'].append(data)
 
     def _add_to_db(self, client_id):
-        wb = openpyxl.load_workbook(filename=self._db_path)
-        ws = wb['Participants']
+        conn = psycopg2.connect(self._db_path, sslmode='require')
+        cursor = conn.cursor()
 
-        r = 0
-        for i in range(2, self._auth_num + 2):
-            cell = 'A' + str(i)
-            if ws[cell].value == client_id:
-                r = i
-                break
-
-        if r == 0:
-            ws.append(self._auth_queue[client_id]['data'])
+        data = self._auth_queue[client_id]['data']
+        cursor.execute(EXISTS_PARTICIPANTS.format(client_id))
+        exists = cursor.fetchall()
+        if exists[0][0]:
+            cursor.execute(UPDATE_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
         else:
-            index = 0
-            for c in 'ABCDEF':
-                cell = c + str(r)
-                ws[cell].value = self._auth_queue[client_id]['data'][index]
-                index += 1
+            cursor.execute(INSERT_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
+            self._auth_num += 1
 
-        self._auth_num += 1
-        wb.save(self._db_path)
+        conn.commit()
+        conn.close()
 
     def get_auth_num(self):
         return self._auth_num
@@ -99,7 +89,7 @@ class AuthHandler:
             bot.send_message(message.chat.id, "Расскажи немного о себе и своих интересах.")
         elif step == 3:
             self._append_data(client_id, message.text)
-            self._append_data(client_id, True)
+            self._append_data(client_id, 'TRUE')
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.")
         elif step == 4:
@@ -117,69 +107,64 @@ class AuthHandler:
             bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников.")
 
     def get_profile(self, client_id):
-        wb = openpyxl.load_workbook(filename=self._db_path)
-        ws = wb['Participants']
+        conn = psycopg2.connect(self._db_path, sslmode='require')
+        cursor = conn.cursor()
 
-        r = 0
-        for i in range(2, self._auth_num + 2):
-            cell = 'A' + str(i)
-            if ws[cell].value == client_id:
-                r = i
-                break
-
-        if r == 0:
+        cursor.execute(SELECT_BY_ID_PARTICIPANTS.format(client_id))
+        data = cursor.fetchall()
+        conn.commit()
+        conn.close()
+        if len(data) == 0:
             return None
         else:
-            result = []
-            for c in 'ABCDEG':
-                cell = c + str(r)
-                result.append(ws[cell].value)
-            return result
+            return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[0][6]]
 
     def is_authorized(self, client_id):
-        wb = openpyxl.load_workbook(filename=self._db_path)
-        ws = wb['Participants']
+        conn = psycopg2.connect(self._db_path, sslmode='require')
+        cursor = conn.cursor()
+        cursor.execute(EXISTS_PARTICIPANTS.format(client_id))
+        data = cursor.fetchall()
+        conn.commit()
+        conn.close()
+        return data[0][0]
 
-        for i in range(2, self._auth_num + 2):
-            cell = 'A' + str(i)
-            if ws[cell].value == client_id:
-                return True
-        return False
+    # def get_participant(self, client_id):
+    #     wb = openpyxl.load_workbook(filename=self._db_path)
+    #     ws = wb['Participants']
+    #
+    #     possible = []  # номера рядов потенциальных собеседников
+    #     for i in range(2, self._auth_num + 2):
+    #         if ws['A' + str(i)].value != client_id and ws['F' + str(i)].value:
+    #             possible.append(i)
+    #
+    #     try:
+    #         r = random.choice(possible)
+    #         result = []
+    #         for c in 'ABCDE':
+    #             cell = c + str(r)
+    #             result.append(ws[cell].value)
+    #         return result
+    #     except IndexError:
+    #         return None
 
     def get_participant(self, client_id):
-        wb = openpyxl.load_workbook(filename=self._db_path)
-        ws = wb['Participants']
-
-        possible = []  # номера рядов потенциальных собеседников
-        for i in range(2, self._auth_num + 2):
-            if ws['A' + str(i)].value != client_id and ws['F' + str(i)].value:
-                possible.append(i)
-
-        try:
-            r = random.choice(possible)
-            result = []
-            for c in 'ABCDE':
-                cell = c + str(r)
-                result.append(ws[cell].value)
-            return result
-        except IndexError:
-            return None
+        pass
 
     def get_all_ids(self):
-        result = []
-        wb = openpyxl.load_workbook(filename=self._db_path)
-        ws = wb['Participants']
-        for i in range(2, self._auth_num + 2):
-            result.append(ws['A' + str(i)].value)
-        return result
+        conn = psycopg2.connect(self._db_path, sslmode='require')
+        cursor = conn.cursor()
+        cursor.execute(SELECT_ALL_IDS_PARTICIPANTS)
+        data = cursor.fetchall()
+        conn.commit()
+        conn.close()
+        return [item[0] for item in data]
 
-    def get_users(self):  # for test only
-        wb = openpyxl.load_workbook(filename=self._db_path)
-        ws = wb['Participants']
-
-        result = []
-        for row in ws.rows:
-            result.append([cell.value for cell in row])
-
-        return result[1:]
+    def get_users(self):
+        conn = psycopg2.connect(self._db_path, sslmode='require')
+        cursor = conn.cursor()
+        cursor.execute(SELECT_ALL_PARTICIPANTS)
+        data = cursor.fetchall()
+        conn.commit()
+        conn.close()
+        return data
 

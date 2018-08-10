@@ -141,7 +141,6 @@ class UpdatesHandler:
         old_ids = self._id_map.keys()
         new_ids = [item['id'] for item in ss]
         l_1, l_2, l_3 = self._compare_ids(old_ids, new_ids)
-        print(l_1, l_2, l_3)
 
         for i in l_1:
             declined.append(self._decline_lecture(i, ws))
