@@ -19,8 +19,8 @@ class AuthHandler:
         cursor.execute(CREATE_PARTICIPANTS)
 
         # test labels
-        cursor.execute(INSERT_PARTICIPANTS.format(1, 'username1', 'name1', 'job1', 'interests1', 'TRUE', None))
-        cursor.execute(INSERT_PARTICIPANTS.format(2, 'username2', 'name2', 'job2', 'interests2', 'TRUE', None))
+        cursor.execute(INSERT_PARTICIPANTS.format(1, 'username1', 'name1', 'job1', 'interests1', 1, None))
+        cursor.execute(INSERT_PARTICIPANTS.format(2, 'username2', 'name2', 'job2', 'interests2', 1, None))
 
         conn.commit()
         conn.close()
@@ -89,7 +89,7 @@ class AuthHandler:
             bot.send_message(message.chat.id, "Расскажи немного о себе и своих интересах.")
         elif step == 3:
             self._append_data(client_id, message.text)
-            self._append_data(client_id, 'TRUE')
+            self._append_data(client_id, 1)
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.")
         elif step == 4:
