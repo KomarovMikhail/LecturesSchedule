@@ -1,4 +1,3 @@
-import openpyxl
 import random
 from constants.config import IMG_PATH
 import psycopg2
@@ -128,27 +127,22 @@ class AuthHandler:
         conn.close()
         return data[0][0]
 
-    # def get_participant(self, client_id):
-    #     wb = openpyxl.load_workbook(filename=self._db_path)
-    #     ws = wb['Participants']
-    #
-    #     possible = []  # номера рядов потенциальных собеседников
-    #     for i in range(2, self._auth_num + 2):
-    #         if ws['A' + str(i)].value != client_id and ws['F' + str(i)].value:
-    #             possible.append(i)
-    #
-    #     try:
-    #         r = random.choice(possible)
-    #         result = []
-    #         for c in 'ABCDE':
-    #             cell = c + str(r)
-    #             result.append(ws[cell].value)
-    #         return result
-    #     except IndexError:
-    #         return None
-
     def get_participant(self, client_id):
-        pass
+        conn = psycopg2.connect(self._db_path, sslmode='require')
+        cursor = conn.cursor()
+        cursor.execute(SELECT_POSSIBLE_IDS_PARTICIPANTS.format(client_id))
+        data = cursor.fetchall()
+        possible = [item[0] for item in data]
+        try:
+            r = random.choice(possible)
+            data = cursor.execute(SELECT_BY_ID_PARTICIPANTS.format(r))
+            conn.commit()
+            conn.close()
+            return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]]
+        except IndexError:
+            conn.commit()
+            conn.close()
+            return None
 
     def get_all_ids(self):
         conn = psycopg2.connect(self._db_path, sslmode='require')

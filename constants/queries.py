@@ -22,3 +22,4 @@ UPDATE_PARTICIPANTS = "UPDATE participants SET username = '{1}', fullname = '{2}
 EXISTS_PARTICIPANTS = "SELECT EXISTS(SELECT id FROM participants WHERE id = {0})"
 DELETE_PARTICIPANTS = "DELETE FROM participants WHERE id = {0}"
 SELECT_ALL_IDS_PARTICIPANTS = "SELECT id FROM participants"
+SELECT_POSSIBLE_IDS_PARTICIPANTS = "SELECT id FROM participants WHERE id != {0}"
