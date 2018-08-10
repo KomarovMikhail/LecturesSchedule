@@ -17,7 +17,7 @@ from favlib import *
 
 
 bot = telebot.TeleBot(TOKEN)
-auth_handler = AuthHandler(DB_PATH)
+auth_handler = AuthHandler(DATABASE_URL)
 advisor = Advisor()
 n_handler = NotificationHandler()
 up_handler = UpdatesHandler(SCHEDULE_PATH, CSV_URL)
