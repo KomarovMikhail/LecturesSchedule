@@ -252,6 +252,10 @@ def check_updates():
         inline_markup = generate_show_more(item[1])
         for i in ids:
             bot.send_message(i, item[0], reply_markup=inline_markup)
+    for item in changed:
+        inline_markup = generate_show_more(item[1])
+        for i in ids:
+            bot.send_message(i, item[0], reply_markup=inline_markup)
 
 
 scheduler.add_job(get_actual_schedule, 'interval', minutes=1)
