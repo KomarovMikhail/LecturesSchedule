@@ -70,3 +70,25 @@ def get_faq(from_url):
 
     print(result)
     return result
+
+
+class SSHandler:
+    """
+    Класс для последовательного отображения лекций.
+    """
+    def __init__(self, csv_url):
+        self._map = {}  # cid->step
+        self._csv_url = csv_url
+
+    def get_lectures(self, cid):
+        if self._map.get(cid) is None:
+            self._map[cid] = 0
+
+        lectures = get_spreadsheet(self._csv_url)
+        upcoming = [lecture for lecture in lectures if is_upcoming(lecture)]
+        upcoming = sorted(upcoming, key=sort_key)
+
+        step = self._map[cid]
+        result = upcoming[step:step+3]
+        self._map[cid] += 3
+        return result
