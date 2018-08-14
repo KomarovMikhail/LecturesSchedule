@@ -60,3 +60,10 @@ def generate_show_more(lid):
     button = types.InlineKeyboardButton(text='Подробнее...', callback_data=callback_data)
     inline_markup.add(button)
     return inline_markup
+
+
+def generate_more_lectures():
+    inline_markup = types.InlineKeyboardMarkup()
+    button = types.InlineKeyboardButton(text='Еще доклады...', callback_data='more_lectures')
+    inline_markup.add(button)
+    return inline_markup

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from constants.config import *
 import telebot
-from sslib import get_nearest, get_faq, sort_key
+from sslib import get_nearest, get_faq, sort_key, SSHandler
 import os
 from flask import Flask, request
 import logging
@@ -21,6 +21,7 @@ auth_handler = AuthHandler(DATABASE_URL)
 advisor = Advisor()
 n_handler = NotificationHandler()
 up_handler = UpdatesHandler(SCHEDULE_PATH, CSV_URL)
+ss_handler = SSHandler(CSV_URL)
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -59,7 +60,7 @@ def test_db(message):
 def get_schedule(message):
     text = ['Расписание ближайших лекций:\n------\n']
 
-    nearest = get_nearest(CSV_URL)
+    nearest = ss_handler.get_lectures(message.chat.id)
     for lecture in nearest:
         buf_text = 'Что: {0}.\nКогда: {1}.\nКто ведет: {2}\n------\n'.format(lecture['name'],
                                                                              lecture['date'] + ' в ' + lecture['start'],
@@ -111,11 +112,20 @@ def callback(call):
     if call.data == 'Показать расписание':
         text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить доклад в "избранное")'.format(FIRE)]
         bot.send_message(cid, text)
-        nearest = get_nearest(CSV_URL)
+        nearest = ss_handler.get_lectures(cid)
         for l in nearest:
             text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
             inline_markup = generate_lectures_list(l['id'])
             bot.send_message(cid, text, reply_markup=inline_markup)
+        bot.send_message(cid, 'Жми "Еще доклады", если хочешь больше докладоов.', reply_markup=generate_more_lectures())
+
+    elif call.data == 'more_lectures':
+        nearest = ss_handler.get_lectures(cid)
+        for l in nearest:
+            text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
+            inline_markup = generate_lectures_list(l['id'])
+            bot.send_message(cid, text, reply_markup=inline_markup)
+        bot.send_message(cid, 'Жми "Еще доклады", если хочешь больше докладоов.', reply_markup=generate_more_lectures())
 
     elif call.data == 'Найти собеседника':
         bot.send_message(cid,

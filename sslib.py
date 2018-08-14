@@ -79,6 +79,7 @@ class SSHandler:
     def __init__(self, csv_url):
         self._map = {}  # cid->step
         self._csv_url = csv_url
+        self._prev_len = 0
 
     def get_lectures(self, cid):
         if self._map.get(cid) is None:
@@ -88,7 +89,17 @@ class SSHandler:
         upcoming = [lecture for lecture in lectures if is_upcoming(lecture)]
         upcoming = sorted(upcoming, key=sort_key)
 
-        step = self._map[cid]
+        step = 0
+        if len(upcoming) != self._prev_len:
+            for key in self._map.keys():
+                self._map[key] = 0
+        else:
+            step = self._map[cid]
+            if step >= len(upcoming):
+                step = 0
+                self._map[cid] = 3
+            else:
+                self._map[cid] += 3
         result = upcoming[step:step+3]
-        self._map[cid] += 3
+        self._prev_len = len(upcoming)
         return result
