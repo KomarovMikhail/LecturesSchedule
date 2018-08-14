@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+from exeptions.custom_exeptions import TimeError
 
 
 def get_spreadsheet(from_path):
@@ -9,6 +10,7 @@ def get_spreadsheet(from_path):
     for i in range(len(spreadsheet['ID'])):
         buf = {}
         row = spreadsheet.loc[i, :]
+        print('Length of row:', len(row))
         buf['id'] = str(row[0])
         buf['date'] = str(row[1])
         buf['start'] = str(row[2])
@@ -23,29 +25,34 @@ def get_spreadsheet(from_path):
 
 
 def is_upcoming(lecture):
-    date = lecture['date'].split('.')
-    day = int(date[0])
-    month = int(date[1])
+    try:
+        date = lecture['date'].split('.')
+        day = int(date[0])
+        month = int(date[1])
 
-    lecture_time = lecture['start'].split(':')
-    hour = int(lecture_time[0])
-    minute = int(lecture_time[1])
+        lecture_time = lecture['start'].split(':')
+        hour = int(lecture_time[0])
+        minute = int(lecture_time[1])
 
-    result_time = datetime(datetime.now().year, month, day, hour, minute)
-
-    return result_time > datetime.now()
+        result_time = datetime(datetime.now().year, month, day, hour, minute)
+        return result_time > datetime.now()
+    except ValueError:
+        raise TimeError(lecture=lecture)
 
 
 def sort_key(lecture):
-    date = lecture['date'].split('.')
-    day = int(date[0])
-    month = int(date[1])
+    try:
+        date = lecture['date'].split('.')
+        day = int(date[0])
+        month = int(date[1])
 
-    lecture_time = lecture['start'].split(':')
-    hour = int(lecture_time[0])
-    minute = int(lecture_time[1])
+        lecture_time = lecture['start'].split(':')
+        hour = int(lecture_time[0])
+        minute = int(lecture_time[1])
 
-    return datetime(datetime.now().year, month, day, hour, minute)
+        return datetime(datetime.now().year, month, day, hour, minute)
+    except ValueError:
+        raise TimeError(lecture=lecture)
 
 
 def get_nearest(csv_url):
@@ -97,9 +104,8 @@ class SSHandler:
             step = self._map[cid]
             if step >= len(upcoming):
                 step = 0
-                self._map[cid] = 3
-            else:
-                self._map[cid] += 3
+                self._map[cid] = 0
         result = upcoming[step:step+3]
+        self._map[cid] += 3
         self._prev_len = len(upcoming)
         return result

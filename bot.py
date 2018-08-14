@@ -14,6 +14,7 @@ from nothandler import NotificationHandler
 from uplib import UpdatesHandler
 from constants.emoji import *
 from favlib import *
+from exeptions.custom_exeptions import TimeError
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -23,9 +24,11 @@ n_handler = NotificationHandler()
 up_handler = UpdatesHandler(SCHEDULE_PATH, CSV_URL)
 ss_handler = SSHandler(CSV_URL)
 
+# Проверяет ближайшие доклады и отправляет напоминания за час до начала
 scheduler = BackgroundScheduler()
 scheduler.start()
 
+# Проверяет расписание на обновления
 updates = BackgroundScheduler()
 updates.start()
 
@@ -56,18 +59,18 @@ def test_db(message):
             bot.send_message(message.chat.id, text)
 
 
-@bot.message_handler(commands=["get"])
-def get_schedule(message):
-    text = ['Расписание ближайших лекций:\n------\n']
-
-    nearest = ss_handler.get_lectures(message.chat.id)
-    for lecture in nearest:
-        buf_text = 'Что: {0}.\nКогда: {1}.\nКто ведет: {2}\n------\n'.format(lecture['name'],
-                                                                             lecture['date'] + ' в ' + lecture['start'],
-                                                                             lecture['lecturer'])
-        text.append(buf_text)
-    text = ''.join(text)
-    bot.send_message(message.chat.id, text)
+# @bot.message_handler(commands=["get"])
+# def get_schedule(message):
+#     text = ['Расписание ближайших лекций:\n------\n']
+#
+#     nearest = ss_handler.get_lectures(message.chat.id)
+#     for lecture in nearest:
+#         buf_text = 'Что: {0}.\nКогда: {1}.\nКто ведет: {2}\n------\n'.format(lecture['name'],
+#                                                                              lecture['date'] + ' в ' + lecture['start'],
+#                                                                              lecture['lecturer'])
+#         text.append(buf_text)
+#     text = ''.join(text)
+#     bot.send_message(message.chat.id, text)
 
 
 @bot.message_handler(func=lambda message: if_menu(message.text), content_types=['text'])
@@ -109,23 +112,27 @@ def callback(call):
     print(call.data)
     cid = call.message.chat.id
 
-    if call.data == 'Показать расписание':
-        text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить доклад в "избранное")'.format(FIRE)]
-        bot.send_message(cid, text)
-        nearest = ss_handler.get_lectures(cid)
-        for l in nearest:
-            text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
-            inline_markup = generate_lectures_list(l['id'])
+    if call.data == 'Показать расписание' or call.data == 'more_lectures':
+        if call.data == 'Показать расписание':
+            text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить доклад в "избранное")'.format(FIRE)]
+            bot.send_message(cid, text)
+        try:
+            nearest = ss_handler.get_lectures(cid)
+            for l in nearest:
+                text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
+                inline_markup = generate_lectures_list(l['id'])
+                bot.send_message(cid, text, reply_markup=inline_markup)
+            text = 'Жми "Еще доклады", если хочешь больше докладоов.'
+            inline_markup = generate_more_lectures()
             bot.send_message(cid, text, reply_markup=inline_markup)
-        bot.send_message(cid, 'Жми "Еще доклады", если хочешь больше докладоов.', reply_markup=generate_more_lectures())
-
-    elif call.data == 'more_lectures':
-        nearest = ss_handler.get_lectures(cid)
-        for l in nearest:
-            text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
-            inline_markup = generate_lectures_list(l['id'])
-            bot.send_message(cid, text, reply_markup=inline_markup)
-        bot.send_message(cid, 'Жми "Еще доклады", если хочешь больше докладоов.', reply_markup=generate_more_lectures())
+        except TimeError as e:
+            lecture = e.get_lecture()
+            if lecture is not None:
+                text = """ОШИБКА!
+                Информация о докладе {0} (ID доклада: {1})заполнена неверно.
+                Сообщение об ошибке уже перенаправлено организаторам.
+                """.format(lecture['name'], lecture['id'])
+                bot.send_message(cid, text)
 
     elif call.data == 'Найти собеседника':
         bot.send_message(cid,
