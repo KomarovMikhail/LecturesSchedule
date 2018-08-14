@@ -59,20 +59,6 @@ def test_db(message):
             bot.send_message(message.chat.id, text)
 
 
-# @bot.message_handler(commands=["get"])
-# def get_schedule(message):
-#     text = ['Расписание ближайших лекций:\n------\n']
-#
-#     nearest = ss_handler.get_lectures(message.chat.id)
-#     for lecture in nearest:
-#         buf_text = 'Что: {0}.\nКогда: {1}.\nКто ведет: {2}\n------\n'.format(lecture['name'],
-#                                                                              lecture['date'] + ' в ' + lecture['start'],
-#                                                                              lecture['lecturer'])
-#         text.append(buf_text)
-#     text = ''.join(text)
-#     bot.send_message(message.chat.id, text)
-
-
 @bot.message_handler(func=lambda message: if_menu(message.text), content_types=['text'])
 def menu(message):
     text = 'Что я могу для тебя сделать?'
