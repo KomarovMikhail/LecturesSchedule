@@ -14,7 +14,7 @@ from nothandler import NotificationHandler
 from uplib import UpdatesHandler
 from constants.emoji import *
 from favlib import *
-from exeptions.custom_exeptions import TimeError
+from exeptions.custom_exeptions import *
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -111,14 +111,20 @@ def callback(call):
             text = 'Жми "Еще доклады", если хочешь больше докладоов.'
             inline_markup = generate_more_lectures()
             bot.send_message(cid, text, reply_markup=inline_markup)
-        except TimeError as e:
-            lecture = e.get_lecture()
-            if lecture is not None:
-                text = """ОШИБКА!
-                Информация о докладе {0} (ID доклада: {1})заполнена неверно.
-                Сообщение об ошибке уже перенаправлено организаторам.
-                """.format(lecture['name'], lecture['id'])
-                bot.send_message(cid, text)
+        except TimeError:
+            text = "ОШИБКА!\nИнформация о времени начала некоторых докладах заполнена неверно, " \
+                   "поэтому в данный момент мы не можем ее отобразить. " \
+                   "Сообщение об ошибке уже перенаправлено организаторам. " \
+                   "Попробуйте отправить запрос позже."
+            bot.send_message(cid, text)
+            # Здесь отправлять сообщение организаторам
+        except FieldNumError:
+            text = "ОШИБКА!\nИнформация о докладах еще не заполнена до конца, " \
+                   "поэтому в данный момент мы не можем ее отобразить. " \
+                   "Сообщение об ошибке уже перенаправлено организаторам. " \
+                   "Попробуйте отправить запрос позже."
+            bot.send_message(cid, text)
+            # Здесь отправлять сообщение организаторам
 
     elif call.data == 'Найти собеседника':
         bot.send_message(cid,
@@ -197,7 +203,7 @@ def callback(call):
             lecture = up_handler.get_lecture_by_id(lid)
             text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
             bot.send_message(cid, text)
-        except ValueError:
+        except AlreadyAddedError:
             bot.send_message(cid, 'Этот доклад уже добавлен в избранное.')
 
     elif call.data[:12] == 'rem_from_fav':
@@ -207,7 +213,7 @@ def callback(call):
             lecture = up_handler.get_lecture_by_id(lid)
             text = 'Доклад "{0}" удален из избранного.'.format(lecture['name'])
             bot.send_message(cid, text)
-        except ValueError:
+        except AlreadyRemovedError:
             bot.send_message(cid, 'Этот доклад уже удален из избранного.')
 
     elif call.data == 'Мое избранное':
@@ -225,7 +231,14 @@ def callback(call):
 
 
 def get_actual_schedule():
-    nearest = get_nearest(CSV_URL)
+    try:
+        nearest = get_nearest(CSV_URL)
+    except TimeError:
+        # Здесь отправлять сообщение организаторам
+        return
+    except FieldNumError:
+        # Здесь отправлять сообщение организаторам
+        return
     for item in nearest:
         n_handler.try_add_item(item)
 

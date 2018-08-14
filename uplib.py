@@ -1,5 +1,6 @@
 import openpyxl
 from sslib import get_spreadsheet
+from exeptions.custom_exeptions import *
 
 
 class UpdatesHandler:
@@ -18,7 +19,11 @@ class UpdatesHandler:
         labels = ['id', 'date', 'start', 'end', 'name', 'lecturer', 'where', 'about']
         ws.append(labels)
 
-        ss = get_spreadsheet(self._csv)
+        try:
+            ss = get_spreadsheet(self._csv)
+        except FieldNumError:
+            # to do
+            return
         i = 2
         for item in ss:
             labels = [item['id'], item['date'], item['start'], item['end'],
@@ -133,7 +138,11 @@ class UpdatesHandler:
         """
         Возвращает готовый текст сообщения для дальнейшей его отправки ботом
         """
-        ss = get_spreadsheet(self._csv)
+        try:
+            ss = get_spreadsheet(self._csv)
+        except FieldNumError:
+            # to do
+            return
         wb = openpyxl.load_workbook(filename=self._sheet)
         ws = wb['Schedule']
         declined, added, changed = [], [], []

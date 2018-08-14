@@ -1,6 +1,6 @@
 from datetime import datetime
 import pandas as pd
-from exeptions.custom_exeptions import TimeError
+from exeptions.custom_exeptions import *
 
 
 def get_spreadsheet(from_path):
@@ -10,7 +10,8 @@ def get_spreadsheet(from_path):
     for i in range(len(spreadsheet['ID'])):
         buf = {}
         row = spreadsheet.loc[i, :]
-        print('Length of row:', len(row))
+        if len(row) != 8:
+            raise FieldNumError
         buf['id'] = str(row[0])
         buf['date'] = str(row[1])
         buf['start'] = str(row[2])
@@ -37,7 +38,7 @@ def is_upcoming(lecture):
         result_time = datetime(datetime.now().year, month, day, hour, minute)
         return result_time > datetime.now()
     except ValueError:
-        raise TimeError(lecture=lecture)
+        raise TimeError
 
 
 def sort_key(lecture):
@@ -52,7 +53,7 @@ def sort_key(lecture):
 
         return datetime(datetime.now().year, month, day, hour, minute)
     except ValueError:
-        raise TimeError(lecture=lecture)
+        raise TimeError
 
 
 def get_nearest(csv_url):

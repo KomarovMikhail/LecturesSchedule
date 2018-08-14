@@ -1,10 +1,14 @@
 class TimeError(Exception):
-    """
-    Содержит поле доклада, информация о котором неправлльно заполнена.
-    """
-    def __init__(self, *args, lecture=None):
-        super(TimeError, self).__init__(*args)
-        self._lecture = lecture
+    pass
 
-    def get_lecture(self):
-        return self._lecture
+
+class FieldNumError(Exception):
+    pass
+
+
+class AlreadyAddedError(Exception):
+    pass
+
+
+class AlreadyRemovedError(Exception):
+    pass

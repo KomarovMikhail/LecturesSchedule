@@ -1,6 +1,7 @@
 from constants.queries import *
 import psycopg2
 from constants.config import DATABASE_URL
+from exeptions.custom_exeptions import *
 
 
 def create_favorite_db():
@@ -21,7 +22,7 @@ def add_to_favorite(cid, lid):
     if len(data) != 0:
         old_ids = data[0][0]
         if lid in old_ids.split(','):
-            raise ValueError
+            raise AlreadyAddedError
         new_ids = old_ids + ',' + str(lid)
         cursor.execute(UPDATE_FAVORITE.format(cid, new_ids))
     else:
@@ -38,14 +39,17 @@ def remove_from_favorite(cid, lid):
     data = cursor.fetchall()
     if len(data) != 0:
         old_ids = data[0][0].split(',')
-        old_ids.remove(lid)
+        try:
+            old_ids.remove(lid)
+        except ValueError:
+            raise AlreadyRemovedError
         if len(old_ids) == 0:
             cursor.execute(DELETE_FAVORITE.format(cid))
         else:
             new_ids = ','.join(old_ids)
             cursor.execute(UPDATE_FAVORITE.format(cid, new_ids))
     else:
-        raise ValueError
+        raise AlreadyRemovedError
     conn.commit()
     conn.close()
 
