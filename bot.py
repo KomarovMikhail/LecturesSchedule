@@ -193,9 +193,17 @@ def callback(call):
     elif call.data[:13] == 'get_full_info':
         lid = call.data[13:]
         lecture = up_handler.get_lecture_by_id(lid)
-        text = '{0} (Читает {1})\nМесто проведения: {2}\nВремя: {3}\n' \
-               'Краткое описание: {4}'.format(lecture['name'], lecture['lecturer'],
-                                              lecture['where'], lecture['start'], lecture['about'])
+        try:
+            mark = est_handler.get_mark(int(lid))
+            text = '{0} (Читает {1})\nМесто проведения: {2}\nВремя: {3}\n' \
+                   'Краткое описание: {4}\nСредняя оценка доклада: {5}' \
+                   ''.format(lecture['name'], lecture['lecturer'],
+                             lecture['where'], lecture['start'], lecture['about'], mark)
+        except NoEstimationsError:
+            text = '{0} (Читает {1})\nМесто проведения: {2}\nВремя: {3}\n' \
+                   'Краткое описание: {4}' \
+                   ''.format(lecture['name'], lecture['lecturer'],
+                             lecture['where'], lecture['start'], lecture['about'])
         bot.send_message(cid, text)
 
     elif call.data[:10] == 'add_to_fav':
@@ -227,8 +235,11 @@ def callback(call):
 
     elif call.data[:4] == 'mark':
         values = call.data[4:].split(',')
-        est_handler.estimate_lecture(cid, int(values[0]), int(values[1]))
-        text = 'Спасибо за оценку доклада. Она поможет нам в дальнейшем развиваться и делать доклады лучше.'
+        try:
+            est_handler.estimate_lecture(cid, int(values[0]), int(values[1]))
+            text = 'Спасибо за оценку доклада. Она поможет нам в дальнейшем развиваться и делать доклады лучше.'
+        except AlreadyEstimatedError:
+            text = 'Вы уже поставили оценку этому докладу.'
         bot.send_message(cid, text)
 
     elif call.data == 'Мое избранное':
