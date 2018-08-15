@@ -25,6 +25,7 @@ class EstimatesHandler:
             return False
 
     def estimate_lecture(self, cid, lid, mark):
+        print(self._map)
         if self._already_estimated(cid, lid):
             raise AlreadyEstimatedError
 
@@ -41,6 +42,7 @@ class EstimatesHandler:
         self._map[cid].append(lid)
         conn.commit()
         conn.close()
+        print(self._map)
 
     def get_mark(self, lid):
         conn = psycopg2.connect(self._db_url, sslmode='require')
