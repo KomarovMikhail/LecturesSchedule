@@ -12,6 +12,10 @@ class UpdatesHandler:
         self._init_sheet()
 
     def _init_sheet(self):
+        try:
+            ss = get_spreadsheet(self._csv)
+        except FieldNumError:
+            raise CreationError
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = 'Schedule'
@@ -19,11 +23,6 @@ class UpdatesHandler:
         labels = ['id', 'date', 'start', 'end', 'name', 'lecturer', 'where', 'about']
         ws.append(labels)
 
-        try:
-            ss = get_spreadsheet(self._csv)
-        except FieldNumError:
-            # to do
-            return
         i = 2
         for item in ss:
             labels = [item['id'], item['date'], item['start'], item['end'],
@@ -141,8 +140,7 @@ class UpdatesHandler:
         try:
             ss = get_spreadsheet(self._csv)
         except FieldNumError:
-            # to do
-            return
+            raise SpreadSheetError
         wb = openpyxl.load_workbook(filename=self._sheet)
         ws = wb['Schedule']
         declined, added, changed = [], [], []

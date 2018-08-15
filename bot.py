@@ -291,7 +291,11 @@ def get_actual_schedule():
 
 def check_updates():
     ids = auth_handler.get_all_ids()
-    declined, added, changed = up_handler.get_updates()
+    try:
+        declined, added, changed = up_handler.get_updates()
+    except SpreadSheetError:
+        # отправить сообщение адимину
+        return
     for item in declined:
         for i in ids:
             bot.send_message(i, item)

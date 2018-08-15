@@ -20,3 +20,11 @@ class AlreadyEstimatedError(Exception):
 
 class NoEstimationsError(Exception):
     pass
+
+
+class CreationError(Exception):
+    pass
+
+
+class SpreadSheetError(Exception):
+    pass
