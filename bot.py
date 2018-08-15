@@ -233,6 +233,9 @@ def callback(call):
             text = 'Оцените доклад "{0}" (Читает {1}) по шкале от 1 до 5.'.format(lecture['name'], lecture['lecturer'])
             inline_markup = generate_marks(lid)
             bot.send_message(cid, text, reply_markup=inline_markup)
+        else:
+            text = 'Вы уже поставили оценку этому докладу.'
+            bot.send_message(cid, text)
 
     elif call.data[:4] == 'mark':
         values = call.data[4:].split(',')
