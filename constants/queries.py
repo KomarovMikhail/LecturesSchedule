@@ -8,6 +8,7 @@ UPDATE_FAVORITE = "UPDATE favorite SET lectures = '{1}' WHERE id = {0}"
 EXISTS_FAVORITE = "SELECT EXISTS(SELECT id FROM favorite WHERE id = {0})"
 DELETE_FAVORITE = "DELETE FROM favorite WHERE id = {0}"
 
+
 CREATE_PARTICIPANTS = "CREATE TABLE participants(id INT, username TEXT, fullname TEXT," \
                       "job TEXT, interests TEXT, active BIT, photo TEXT, PRIMARY KEY(id))"
 IF_DROP_PARTICIPANTS = "DROP TABLE IF EXISTS participants"
@@ -23,3 +24,11 @@ EXISTS_PARTICIPANTS = "SELECT EXISTS(SELECT id FROM participants WHERE id = {0})
 DELETE_PARTICIPANTS = "DELETE FROM participants WHERE id = {0}"
 SELECT_ALL_IDS_PARTICIPANTS = "SELECT id FROM participants"
 SELECT_POSSIBLE_IDS_PARTICIPANTS = "SELECT id FROM participants WHERE id != {0}"
+
+
+CREATE_ESTIMATES = "CREATE TABLE estimates(id INT, summ INT, num INT, PRIMARY KEY (id))"
+IF_DROP_ESTIMATES = "DROP TABLE IF EXISTS estimates"
+DROP_ESTIMATES = "DROP TABLE estimates"
+SELECT_BY_ID_ESTIMATES = "SELECT summ, num FROM estimates WHERE id = {0}"
+INSERT_ESTIMATES = "INSERT INTO estimates(id, summ, num) VALUES({0}, {1}, {2})"
+UPDATE_ESTIMATES = "UPDATE estimates SET summ = {1}, num = {2} WHERE id = {0}"

@@ -22,6 +22,8 @@ def add_to_favorite(cid, lid):
     if len(data) != 0:
         old_ids = data[0][0]
         if lid in old_ids.split(','):
+            conn.commit()
+            conn.close()
             raise AlreadyAddedError
         new_ids = old_ids + ',' + str(lid)
         cursor.execute(UPDATE_FAVORITE.format(cid, new_ids))
@@ -42,6 +44,8 @@ def remove_from_favorite(cid, lid):
         try:
             old_ids.remove(lid)
         except ValueError:
+            conn.commit()
+            conn.close()
             raise AlreadyRemovedError
         if len(old_ids) == 0:
             cursor.execute(DELETE_FAVORITE.format(cid))
@@ -49,6 +53,8 @@ def remove_from_favorite(cid, lid):
             new_ids = ','.join(old_ids)
             cursor.execute(UPDATE_FAVORITE.format(cid, new_ids))
     else:
+        conn.commit()
+        conn.close()
         raise AlreadyRemovedError
     conn.commit()
     conn.close()

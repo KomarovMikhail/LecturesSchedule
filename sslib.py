@@ -76,7 +76,6 @@ def get_faq(from_url):
         buf['answer'] = str(row[1])
         result.append(buf)
 
-    print(result)
     return result
 
 
@@ -94,19 +93,18 @@ class SSHandler:
             self._map[cid] = 0
 
         lectures = get_spreadsheet(self._csv_url)
-        upcoming = [lecture for lecture in lectures if is_upcoming(lecture)]
-        upcoming = sorted(upcoming, key=sort_key)
+        lectures = sorted(lectures, key=sort_key)
 
         step = 0
-        if len(upcoming) != self._prev_len:
+        if len(lectures) != self._prev_len:
             for key in self._map.keys():
                 self._map[key] = 0
         else:
             step = self._map[cid]
-            if step >= len(upcoming):
+            if step >= len(lectures):
                 step = 0
                 self._map[cid] = 0
-        result = upcoming[step:step+3]
+        result = lectures[step:step+3]
         self._map[cid] += 3
-        self._prev_len = len(upcoming)
+        self._prev_len = len(lectures)
         return result

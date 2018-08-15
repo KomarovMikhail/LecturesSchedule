@@ -12,3 +12,11 @@ class AlreadyAddedError(Exception):
 
 class AlreadyRemovedError(Exception):
     pass
+
+
+class AlreadyEstimatedError(Exception):
+    pass
+
+
+class NoEstimationsError(Exception):
+    pass

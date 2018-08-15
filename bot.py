@@ -15,6 +15,7 @@ from uplib import UpdatesHandler
 from constants.emoji import *
 from favlib import *
 from exeptions.custom_exeptions import *
+from estlib import EstimatesHandler
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -23,6 +24,7 @@ advisor = Advisor()
 n_handler = NotificationHandler()
 up_handler = UpdatesHandler(SCHEDULE_PATH, CSV_URL)
 ss_handler = SSHandler(CSV_URL)
+est_handler = EstimatesHandler(DATABASE_URL)
 
 # Проверяет ближайшие доклады и отправляет напоминания за час до начала
 scheduler = BackgroundScheduler()
@@ -215,6 +217,19 @@ def callback(call):
             bot.send_message(cid, text)
         except AlreadyRemovedError:
             bot.send_message(cid, 'Этот доклад уже удален из избранного.')
+
+    elif call.data[:8] == 'estimate':
+        lid = call.data[8:]
+        lecture = up_handler.get_lecture_by_id(lid)
+        text = 'Оцените доклад "{0}" (Читает {1}) по шкале от 1 до 5.'.format(lecture['name'], lecture['lecturer'])
+        inline_markup = generate_marks(lid)
+        bot.send_message(cid, text, reply_markup=inline_markup)
+
+    elif call.data[:4] == 'mark':
+        values = call.data[4:].split(',')
+        est_handler.estimate_lecture(cid, int(values[0]), int(values[1]))
+        text = 'Спасибо за оценку доклада. Она поможет нам в дальнейшем развиваться и делать доклады лучше.'
+        bot.send_message(cid, text)
 
     elif call.data == 'Мое избранное':
         lids = select_by_id(cid)
