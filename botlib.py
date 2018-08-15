@@ -75,10 +75,10 @@ def generate_more_lectures():
 
 def generate_marks(lid):
     inline_markup = types.InlineKeyboardMarkup()
-    marks = ['1', '2', '3', '4', '5']
+    marks = [('1', ONE), ('2', TWO), ('3', THREE), ('4', FOUR), ('5', FIVE)]
     buttons = []
     for mark in marks:
-        buttons.append(types.InlineKeyboardButton(text=mark, callback_data='mark' + lid + ',' + mark))
+        buttons.append(types.InlineKeyboardButton(text=mark[1], callback_data='mark' + lid + ',' + mark[0]))
     inline_markup.add(buttons[4], buttons[3], buttons[2])
     inline_markup.add(buttons[1], buttons[0])
     return inline_markup

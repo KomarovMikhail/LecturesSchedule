@@ -17,7 +17,7 @@ class EstimatesHandler:
         conn.commit()
         conn.close()
 
-    def _already_estimated(self, cid, lid):
+    def already_estimated(self, cid, lid):
         if self._map.get(cid) is not None:
             return lid in self._map[cid]
         else:
@@ -26,7 +26,7 @@ class EstimatesHandler:
 
     def estimate_lecture(self, cid, lid, mark):
         print(self._map)
-        if self._already_estimated(cid, lid):
+        if self.already_estimated(cid, lid):
             raise AlreadyEstimatedError
 
         conn = psycopg2.connect(self._db_url, sslmode='require')
