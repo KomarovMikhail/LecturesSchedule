@@ -16,6 +16,7 @@ from constants.emoji import *
 from favlib import *
 from exeptions.custom_exeptions import *
 from estlib import EstimatesHandler
+from orglib import AdminHandler
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -25,6 +26,7 @@ n_handler = NotificationHandler()
 up_handler = UpdatesHandler(SCHEDULE_PATH, CSV_URL)
 ss_handler = SSHandler(CSV_URL)
 est_handler = EstimatesHandler(DATABASE_URL)
+admin_handler = AdminHandler(ADMIN_PASSWORD)
 
 # Проверяет ближайшие доклады и отправляет напоминания за час до начала
 scheduler = BackgroundScheduler()
@@ -59,6 +61,16 @@ def test_db(message):
         for user in users:
             text = str(user)
             bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(commands=['admin'])
+def register_admin_first_step(message):
+    pass
+
+
+@bot.message_handler(func=lambda message: admin_handler.need_to_call(message.chat.id))
+def register_admin_second_step(message):
+    pass
 
 
 @bot.message_handler(func=lambda message: if_menu(message.text), content_types=['text'])

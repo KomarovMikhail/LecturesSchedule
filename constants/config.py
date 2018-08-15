@@ -14,3 +14,5 @@ IMG_PATH = 'imgs/'
 SCHEDULE_PATH = 'actual_schedule/schedule.xlsx'
 
 DATABASE_URL = os.environ['DATABASE_URL']
+
+ADMIN_PASSWORD = '0000'
