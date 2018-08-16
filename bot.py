@@ -97,7 +97,7 @@ def ask_admins(message):
     if profile is None:
         text = 'Сообщение администраторам от незарегистрированного пользователя.\n' + message.text
     else:
-        text = 'Сообщение администраторам пользователя {0} (@{1}).\n'.format(profile[2], profile[1])
+        text = 'Сообщение администраторам пользователя {0} (@{1}).\n{2}'.format(profile[2], profile[1], message.text)
     mass_mailing(admin_handler.get_ids(), text, bot)
     bot.send_message(message.chat.id, 'Ваше сообщение доставлено организаторам.')
 
