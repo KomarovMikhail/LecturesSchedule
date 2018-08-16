@@ -142,14 +142,14 @@ def callback(call):
                    "Сообщение об ошибке уже перенаправлено организаторам. " \
                    "Попробуйте отправить запрос позже."
             bot.send_message(cid, text)
-            # Здесь отправлять сообщение организаторам
+            mass_mailing(admin_handler.get_ids(), SPREADSHEET_ERROR_MESSAGE, bot)
         except FieldNumError:
             text = "ОШИБКА!\nИнформация о докладах еще не заполнена до конца, " \
                    "поэтому в данный момент мы не можем ее отобразить. " \
                    "Сообщение об ошибке уже перенаправлено организаторам. " \
                    "Попробуйте отправить запрос позже."
             bot.send_message(cid, text)
-            # Здесь отправлять сообщение организаторам
+            mass_mailing(admin_handler.get_ids(), SPREADSHEET_ERROR_MESSAGE, bot)
 
     elif call.data == 'Найти собеседника':
         bot.send_message(cid,
@@ -287,10 +287,10 @@ def get_actual_schedule():
     try:
         nearest = get_nearest(CSV_URL)
     except TimeError:
-        # Здесь отправлять сообщение организаторам
+        # mass_mailing(admin_handler.get_ids(), SPREADSHEET_ERROR_MESSAGE, bot)
         return
     except FieldNumError:
-        # Здесь отправлять сообщение организаторам
+        # mass_mailing(admin_handler.get_ids(), SPREADSHEET_ERROR_MESSAGE, bot)
         return
     for item in nearest:
         n_handler.try_add_item(item)
@@ -317,7 +317,7 @@ def check_updates():
     try:
         declined, added, changed = up_handler.get_updates()
     except SpreadSheetError:
-        # отправить сообщение адимину
+        mass_mailing(admin_handler.get_ids(), SPREADSHEET_ERROR_MESSAGE, bot)
         return
     for item in declined:
         for i in ids:
@@ -333,7 +333,7 @@ def check_updates():
 
 
 scheduler.add_job(get_actual_schedule, 'interval', minutes=1)
-updates.add_job(check_updates, 'interval', minutes=1)
+updates.add_job(check_updates, 'interval', minutes=5)
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)

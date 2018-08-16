@@ -1,4 +1,5 @@
 import os
+from constants.emoji import EXCLAMATION_POINT
 
 
 TOKEN = '588048354:AAFgl8K6V4JSoc9Cs3v4PlgNT2zfNHg0XcU'
@@ -16,3 +17,7 @@ SCHEDULE_PATH = 'actual_schedule/schedule.xlsx'
 DATABASE_URL = os.environ['DATABASE_URL']
 
 ADMIN_PASSWORD = '0000'
+
+SPREADSHEET_ERROR_MESSAGE = '{0}ВНИМАНИЕ АДМИНИСТРАТОРАМ{0}\nИнформация о некоторых докладах заполнена неверно. ' \
+                            'Просьба исправить в срочном порядке, ' \
+                            'чтобы продолжить полноценную работу сервиса.'.format(EXCLAMATION_POINT)

@@ -82,3 +82,8 @@ def generate_marks(lid):
     inline_markup.add(buttons[4], buttons[3], buttons[2])
     inline_markup.add(buttons[1], buttons[0])
     return inline_markup
+
+
+def mass_mailing(cids, text, bot):
+    for i in cids:
+        bot.send_message(i, text)
