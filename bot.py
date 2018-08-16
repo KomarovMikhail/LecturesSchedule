@@ -91,6 +91,18 @@ def menu(message):
     bot.send_message(message.chat.id, text, reply_markup=inline_markup)
 
 
+@bot.message_handler(func=lambda message: admin_handler.asking(message.chat.id), content_types=['text'])
+def ask_admins(message):
+    admin_handler.remove_asking(message.chat.id)
+    profile = auth_handler.get_profile(message.chat.id)
+    if profile is None:
+        text = 'Сообщение администраторам от незарегистрированного пользователя.\n' + message.text
+    else:
+        text = 'Сообщение администраторам пользователя {0} (@{1}).\n'.format(profile[2], profile[1])
+    mass_mailing(admin_handler.get_ids(), text, bot)
+    bot.send_message(message.chat.id, 'Ваше сообщение доставлено организаторам.')
+
+
 @bot.message_handler(content_types=["text"])
 def unknown_messages(message):
     if auth_handler.is_in_queue(message.chat.id):
@@ -281,6 +293,11 @@ def callback(call):
                 text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
                 inline_markup = generate_favorite_list(l['id'])
                 bot.send_message(cid, text, reply_markup=inline_markup)
+
+    elif call.data == 'Задать вопрос организаторам':
+        admin_handler.add_asking(cid)
+        text = 'Ниже напишите свой вопрос. Мы перешлем его организаторам.'
+        bot.send_message(cid, text)
 
 
 def get_actual_schedule():

@@ -6,9 +6,13 @@ class AdminHandler:
         self._ids = []
         self._processing = []
         self._pass = password
+        self._asking = []
 
     def need_to_call(self, cid):
         return cid in self._processing
+
+    def asking(self, cid):
+        return cid in self._asking
 
     def add_user(self, cid):
         if cid in self._ids:
@@ -26,3 +30,9 @@ class AdminHandler:
 
     def get_ids(self):
         return self._ids
+
+    def add_asking(self, cid):
+        self._asking.append(cid)
+
+    def remove_asking(self, cid):
+        self._asking.remove(cid)

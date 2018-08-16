@@ -17,7 +17,8 @@ def generate_menu():
         ('Обновить профиль', PENCIL),
         ('Мой профиль', BUST),
         ('Мое избранное', FIRE),
-        ('FAQ', QUESTION)
+        ('FAQ', QUESTION),
+        ('Задать вопрос организаторам', ENVELOPE)
     ]
     for b in buttons:
         inline_markup.add(types.InlineKeyboardButton(text=b[1] + b[0], callback_data=b[0]))
