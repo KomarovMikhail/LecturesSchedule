@@ -113,6 +113,7 @@ class AuthHandler:
         data = cursor.fetchall()
         conn.commit()
         conn.close()
+        print('DATA: ', data)
         if len(data) == 0:
             return None
         else:
