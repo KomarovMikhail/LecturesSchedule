@@ -116,7 +116,16 @@ class AuthHandler:
         if len(data) == 0:
             return None
         else:
-            return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[0][6]]
+            # return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[0][6]]
+            return {
+                'id': client_id,
+                'username': data[0][0],
+                'fullname': data[0][1],
+                'job': data[0][2],
+                'interests': data[0][3],
+                'active': data[0][4],
+                'photo': data[0][5]
+            }
 
     def is_authorized(self, client_id):
         conn = psycopg2.connect(self._db_path, sslmode='require')
@@ -138,7 +147,16 @@ class AuthHandler:
             data = cursor.execute(SELECT_BY_ID_PARTICIPANTS.format(r))
             conn.commit()
             conn.close()
-            return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]]
+            # return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]]
+            return {
+                'id': r,
+                'username': data[0][0],
+                'fullname': data[0][1],
+                'job': data[0][2],
+                'interests': data[0][3],
+                'active': data[0][4],
+                'photo': data[0][5]
+            }
         except IndexError:
             conn.commit()
             conn.close()

@@ -97,7 +97,8 @@ def ask_admins(message):
     if profile is None:
         text = 'Сообщение администраторам от незарегистрированного пользователя.\n' + message.text
     else:
-        text = 'Сообщение администраторам пользователя {0} (@{1}).\n{2}'.format(profile[2], profile[1], message.text)
+        text = 'Сообщение администраторам пользователя {0} (@{1}).\n{2}'.format(profile['fullname'],
+                                                                                profile['username'], message.text)
     mass_mailing(admin_handler.get_ids(), text, bot)
     bot.send_message(message.chat.id, 'Ваше сообщение доставлено организаторам.')
 
@@ -119,7 +120,7 @@ def handle_photo(message):
     if True:
         file_info = bot.get_file(message.photo[0].file_id)
         downloaded = bot.download_file(file_info.file_path)
-        print(file_info.file_path, file_info.file_size)
+        # print(file_info.file_path, file_info.file_size)
 
         src = IMG_PATH + str(message.chat.id)
         with open(src, 'wb') as new_file:
@@ -171,10 +172,11 @@ def callback(call):
             if p is None:
                 bot.send_message(cid, "Извини, я не могу найти тебе подходящего собеседника.")
             else:
-                advisor.set_offer(cid, p[0])
+                advisor.set_offer(cid, p['id'])
                 inline_markup = generate_answer_buttons()
                 bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                 'Интересы: {2}\nUsername: @{3}'.format(p[2], p[3], p[4], p[1]),
+                                 'Интересы: {2}\nUsername: @{3}'.format(p['fullname'], p['job'], p['interests'],
+                                                                        p['username']),
                                  reply_markup=inline_markup)
         else:
             bot.send_message(cid, "Ты еще не заполнил информацию о себе.\n"
@@ -187,7 +189,7 @@ def callback(call):
         text = 'Привет! Один из участников заинтересовался тобой. Держи некоторую информацию о нем:\n' \
                'Имя: {0}\nГде работает: {1}\nИнтересы: {2}\nUsername: {3}\n' \
                'Если этот участник тоже тебя заинтересовал, ' \
-               'напиши ему в личные сообщения.'.format(p[2], p[3], p[4], p[1])
+               'напиши ему в личные сообщения.'.format(p['fullname'], p['job'], p['interests'], p['username'])
         # bot.send_message(to_id, text)
         # bot.send_message(cid, "Участнику отправлено приглашение связаться с тобой.")
 
@@ -199,11 +201,11 @@ def callback(call):
         if p is None:
             bot.send_message(cid, "Извини, я не могу найти тебе подходящего собеседника.")
         else:
-            advisor.set_offer(cid, p[0])
+            advisor.set_offer(cid, p['id'])
             inline_markup = generate_answer_buttons()
             bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                  'Интересы: {2}\nUsername: @{3}'.format(p[2], p[3], p[4], p[1]),
-                             reply_markup=inline_markup)
+                                  'Интересы: {2}\nUsername: @{3}'.format(p['fullname'], p['job'], p['interests'],
+                                                                         p['username']), reply_markup=inline_markup)
 
     elif call.data == 'Обновить профиль':
         auth_handler.add_client(cid)
@@ -214,7 +216,8 @@ def callback(call):
         if profile is None:
             text = 'Ты еще не заполнял информацию о себе. Чтобы исправить это нажми "Обновить профиль"'
         else:
-            text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile[2], profile[3], profile[4])
+            text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile['fullname'], profile['job'],
+                                                                        profile['interests'])
             bot.send_photo(cid, open(profile[5], 'rb'))
         bot.send_message(cid, text)
 

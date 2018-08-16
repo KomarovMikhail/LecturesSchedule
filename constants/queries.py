@@ -16,7 +16,7 @@ DROP_PARTICIPANTS = "DROP TABLE participants"
 SELECT_ALL_PARTICIPANTS = "SELECT * FROM participants"
 INSERT_PARTICIPANTS = "INSERT INTO participants(id, username, fullname, job, interests, active, photo) " \
                       "VALUES({0}, '{1}', '{2}', '{3}', '{4}', {5}, '{6}')"
-SELECT_BY_ID_PARTICIPANTS = "SELECT id, username, fullname, job, interests, active, photo " \
+SELECT_BY_ID_PARTICIPANTS = "SELECT username, fullname, job, interests, active, photo " \
                             "FROM participants WHERE id = {0}"
 UPDATE_PARTICIPANTS = "UPDATE participants SET username = '{1}', fullname = '{2}', job = '{3}', interests = '{4}', " \
                       "active = {5}, photo = '{6}' WHERE id = {0}"
