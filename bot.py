@@ -81,7 +81,6 @@ def register_admin_second_step(message):
     else:
         text = 'Пароль неверный. Мы не можем выдать вам права администратора'
     bot.send_message(message.chat.id, text)
-    print(admin_handler.get_ids())
 
 
 @bot.message_handler(func=lambda message: if_menu(message.text), content_types=['text'])
