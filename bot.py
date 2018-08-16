@@ -56,7 +56,7 @@ def test_db(message):
     users = auth_handler.get_users()
     print(auth_handler.get_all_ids())
     if len(users) == 0:
-        bot.send_message(message.chat.id, "Нет зарегестрированных пользователей")
+        bot.send_message(message.chat.id, "Нет зарегестрированных пользователей.")
     else:
         for user in users:
             text = str(user)
@@ -65,12 +65,23 @@ def test_db(message):
 
 @bot.message_handler(commands=['admin'])
 def register_admin_first_step(message):
-    pass
+    try:
+        admin_handler.add_user(message.chat.id)
+        text = 'Введите пароль чтобы получить права администратора.'
+        bot.send_message(message.chat.id, text)
+    except AlreadyAdminError:
+        text = 'Вы уже получили права администратора ранее.'
+        bot.send_message(message.chat.id, text)
 
 
 @bot.message_handler(func=lambda message: admin_handler.need_to_call(message.chat.id))
 def register_admin_second_step(message):
-    pass
+    if admin_handler.try_login(message.chat.id, message.text):
+        text = 'Вы успешно авторизировались и получили права администратора'
+    else:
+        text = 'Пароль неверный. Мы не можем выдать вам права администратора'
+    bot.send_message(message.chat.id, text)
+    print(admin_handler.get_ids())
 
 
 @bot.message_handler(func=lambda message: if_menu(message.text), content_types=['text'])

@@ -28,3 +28,7 @@ class CreationError(Exception):
 
 class SpreadSheetError(Exception):
     pass
+
+
+class AlreadyAdminError(Exception):
+    pass
