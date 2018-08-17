@@ -25,13 +25,28 @@ def generate_menu():
     return inline_markup
 
 
-def generate_answer_buttons():
+def generate_answer_buttons(pid):
     inline_markup = types.InlineKeyboardMarkup()
-    b_1 = types.InlineKeyboardButton(text='+', callback_data='+')
-    b_2 = types.InlineKeyboardButton(text='-', callback_data='-')
-    b_3 = types.InlineKeyboardButton(text='Показать еще...', callback_data='Показать еще...')
+    b_1 = types.InlineKeyboardButton(text=THUMBS_UP, callback_data='like' + str(pid))
+    b_2 = types.InlineKeyboardButton(text=THUMBS_DOWN, callback_data='dislike')
+    b_3 = types.InlineKeyboardButton(text='Показать еще...', callback_data='more_users')
     inline_markup.add(b_1, b_2)
     inline_markup.add(b_3)
+    return inline_markup
+
+
+def generate_thumbs(cid):
+    inline_markup = types.InlineKeyboardMarkup()
+    b_1 = types.InlineKeyboardButton(text=THUMBS_UP, callback_data='agree' + str(cid))
+    b_2 = types.InlineKeyboardButton(text=THUMBS_DOWN, callback_data='disagree')
+    inline_markup.add(b_1, b_2)
+    return inline_markup
+
+
+def generate_more_users():
+    inline_markup = types.InlineKeyboardMarkup()
+    button = types.InlineKeyboardButton(text='Показать еще...', callback_data='more_users')
+    inline_markup.add(button)
     return inline_markup
 
 

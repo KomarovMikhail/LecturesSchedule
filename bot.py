@@ -7,7 +7,6 @@ from flask import Flask, request
 import logging
 from botlib import *
 from authlib import AuthHandler
-from advisor import Advisor
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from nothandler import NotificationHandler
@@ -21,7 +20,6 @@ from orglib import AdminHandler
 
 bot = telebot.TeleBot(TOKEN)
 auth_handler = AuthHandler(DATABASE_URL)
-advisor = Advisor()
 n_handler = NotificationHandler()
 up_handler = UpdatesHandler(SCHEDULE_PATH, CSV_URL)
 ss_handler = SSHandler(CSV_URL)
@@ -164,48 +162,65 @@ def callback(call):
             mass_mailing(admin_handler.get_ids(), SPREADSHEET_ERROR_MESSAGE, bot)
 
     elif call.data == 'Найти собеседника':
-        bot.send_message(cid,
-                         "Давай попробуем найти людей, с которыми тебе будет интересно пообщаться.\n"
-                         "Нажимай \"+\", если человек интересен и я отправлю ему приглашение связаться с тобой.")
         if auth_handler.is_authorized(cid):
+            text = "Давай попробуем найти людей, с которыми тебе будет интересно пообщаться.\n" \
+                    "Нажимай {0}, если человек интересен " \
+                    "и я отправлю ему приглашение связаться с тобой.".format(THUMBS_UP)
+            bot.send_message(cid, text)
             p = auth_handler.get_participant(cid)
             if p is None:
                 bot.send_message(cid, "Извини, я не могу найти тебе подходящего собеседника.")
             else:
-                advisor.set_offer(cid, p['id'])
-                inline_markup = generate_answer_buttons()
+                inline_markup = generate_answer_buttons(p['id'])
                 bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                 'Интересы: {2}\nUsername: @{3}'.format(p['fullname'], p['job'], p['interests'],
-                                                                        p['username']),
+                                 'Интересы: {2}'.format(p['fullname'], p['job'], p['interests']),
                                  reply_markup=inline_markup)
         else:
             bot.send_message(cid, "Ты еще не заполнил информацию о себе.\n"
-                             "Нажми \"Обновить профиль\" и пройди авторизацию.")
+                             "Нажми \"Обновить профиль\" в главном меню и пройди авторизацию.")
 
-    elif call.data == '+':
-        to_id = advisor.get_offer(cid)
-        advisor.del_client(cid)
+    elif call.data[:4] == 'like':
+        pid = int(call.data[4:])
         p = auth_handler.get_profile(cid)
         text = 'Привет! Один из участников заинтересовался тобой. Держи некоторую информацию о нем:\n' \
-               'Имя: {0}\nГде работает: {1}\nИнтересы: {2}\nUsername: {3}\n' \
+               'Имя: {0}\nГде работает: {1}\nИнтересы: {2}\n' \
                'Если этот участник тоже тебя заинтересовал, ' \
-               'напиши ему в личные сообщения.'.format(p['fullname'], p['job'], p['interests'], p['username'])
-        # bot.send_message(to_id, text)
-        # bot.send_message(cid, "Участнику отправлено приглашение связаться с тобой.")
+               'жми {3} и мы отправим вам контакты.'.format(p['fullname'], p['job'], p['interests'], THUMBS_UP)
+        inline_markup = generate_thumbs(cid)
+        bot.send_message(pid, text, reply_markup=inline_markup)
+        text = "Участнику отправлено приглашение связаться с тобой. Если он даст согласие, мы отправим вам контакты."
+        bot.send_message(cid, text)
 
-    elif call.data == '-':
-        pass
+    elif call.data == 'dislike' or call.data == 'disagree':
+        text = 'Ладно. Можешь попробовать найти других собеседников.'
+        inline_markup = generate_more_users()
+        bot.send_message(cid, text, reply_markup=inline_markup)
 
-    elif call.data == 'Показать еще...':
+    elif call.data[:5] == 'agree':
+        pid = int(call.data[5:])
+        info = auth_handler.get_profile(pid)
+        text = 'Полная информация об участнике:\nИмя: {0}\nГде работает: {1}\nИнтересы: {2}\nUsername: @{3}' \
+               ''.format(info['fullname'], info['job'], info['interests'], info['username'])
+        inline_markup = generate_more_users()
+        bot.send_message(cid, text, reply_markup=inline_markup)
+        bot.send_photo(cid, open(info['photo'], 'rb'))
+
+        info = auth_handler.get_profile(cid)
+        text = 'Участник дал согласие на ваш запрос. Полная информация:\nИмя: {0}\nГде работает: {1}\nИнтересы: ' \
+               '{2}\nUsername: @{3}'.format(info['fullname'], info['job'], info['interests'], info['username'])
+        bot.send_message(pid, text)
+        bot.send_photo(pid, open(info['photo'], 'rb'))
+
+    elif call.data == 'more_users':
         p = auth_handler.get_participant(cid)
         if p is None:
             bot.send_message(cid, "Извини, я не могу найти тебе подходящего собеседника.")
         else:
-            advisor.set_offer(cid, p['id'])
-            inline_markup = generate_answer_buttons()
-            bot.send_message(cid, 'Имя: {0}\nГде работает: {1}\n'
-                                  'Интересы: {2}\nUsername: @{3}'.format(p['fullname'], p['job'], p['interests'],
-                                                                         p['username']), reply_markup=inline_markup)
+            inline_markup = generate_answer_buttons(p['id'])
+            bot.send_message(cid,
+                             'Имя: {0}\nГде работает: {1}\n'
+                             'Интересы: {2}'.format(p['fullname'], p['job'], p['interests']),
+                             reply_markup=inline_markup)
 
     elif call.data == 'Обновить профиль':
         auth_handler.add_client(cid)
@@ -218,7 +233,7 @@ def callback(call):
         else:
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile['fullname'], profile['job'],
                                                                         profile['interests'])
-            bot.send_photo(cid, open(profile[5], 'rb'))
+            bot.send_photo(cid, open(profile['photo'], 'rb'))
         bot.send_message(cid, text)
 
     elif call.data == 'FAQ':

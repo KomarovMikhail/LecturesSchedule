@@ -7,7 +7,6 @@ from constants.queries import *
 class AuthHandler:
     def __init__(self, db_path):
         self._auth_queue = {}
-        self._auth_num = 0
         self._db_path = db_path
         self._init_db()
 
@@ -47,13 +46,9 @@ class AuthHandler:
             cursor.execute(UPDATE_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
         else:
             cursor.execute(INSERT_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
-            self._auth_num += 1
 
         conn.commit()
         conn.close()
-
-    def get_auth_num(self):
-        return self._auth_num
 
     def add_client(self, client_id):
         self._auth_queue[client_id] = {
