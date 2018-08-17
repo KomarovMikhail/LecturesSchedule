@@ -135,10 +135,13 @@ class AuthHandler:
         cursor = conn.cursor()
         cursor.execute(SELECT_POSSIBLE_IDS_PARTICIPANTS.format(client_id))
         data = cursor.fetchall()
+        print(data)
         possible = [item[0] for item in data]
         try:
             r = random.choice(possible)
-            data = cursor.execute(SELECT_BY_ID_PARTICIPANTS.format(r))
+            print(r)
+            cursor.execute(SELECT_BY_ID_PARTICIPANTS.format(r))
+            data = cursor.fetchall()
             conn.commit()
             conn.close()
             # return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]]
