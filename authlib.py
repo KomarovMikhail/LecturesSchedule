@@ -1,7 +1,8 @@
 import random
-from constants.config import IMG_PATH
+from constants.config import IMG_PATH, NO_PHOTO_FLAG
 import psycopg2
 from constants.queries import *
+from botlib import skip_button, main_menu_button
 
 
 class AuthHandler:
@@ -67,37 +68,51 @@ class AuthHandler:
         Прим.: на шаге 0 обрабатывается сообщение от бота, на последующих - от пользователя
         """
         step = self._get_step(client_id)
+        reply_markup = skip_button()
         if step == 0:
             self._append_data(client_id, message.chat.id)
             self._increment_step(client_id)
-            bot.send_message(message.chat.id, "Как тебя зовут?")
+            bot.send_message(message.chat.id, "Как тебя зовут?", reply_markup=reply_markup)
         elif step == 1:
             self._append_data(client_id, message.from_user.username)
-            self._append_data(client_id, message.text)
+            if message.text != 'Пропустить':
+                self._append_data(client_id, message.text)
+            else:
+                self._append_data(client_id, 'Не указано')
             self._increment_step(client_id)
-            bot.send_message(message.chat.id, "Кем ты работаешь?")
+            bot.send_message(message.chat.id, "Кем ты работаешь?", reply_markup=reply_markup)
         elif step == 2:
-            self._append_data(client_id, message.text)
+            if message.text != 'Пропустить':
+                self._append_data(client_id, message.text)
+            else:
+                self._append_data(client_id, 'Не указано')
             self._increment_step(client_id)
-            bot.send_message(message.chat.id, "Расскажи немного о себе и своих интересах.")
+            bot.send_message(message.chat.id, "Расскажи немного о себе и своих интересах.", reply_markup=reply_markup)
         elif step == 3:
-            self._append_data(client_id, message.text)
+            if message.text != 'Пропустить':
+                self._append_data(client_id, message.text)
+            else:
+                self._append_data(client_id, 'Не указано')
             self._append_data(client_id, "B'1'")
             self._increment_step(client_id)
-            bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.")
+            bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.", reply_markup=reply_markup)
         elif step == 4:
-            file_info = bot.get_file(message.photo[0].file_id)
-            downloaded = bot.download_file(file_info.file_path)
-            print(file_info.file_path, file_info.file_size)
+            if message.text != 'Пропустить':
+                file_info = bot.get_file(message.photo[0].file_id)
+                downloaded = bot.download_file(file_info.file_path)
+                print(file_info.file_path, file_info.file_size)
 
-            src = IMG_PATH + str(message.chat.id)
-            with open(src, 'wb') as new_file:
-                new_file.write(downloaded)
-            self._append_data(client_id, src)
+                src = IMG_PATH + str(message.chat.id)
+                with open(src, 'wb') as new_file:
+                    new_file.write(downloaded)
+                self._append_data(client_id, src)
+            else:
+                self._append_data(client_id, NO_PHOTO_FLAG)
 
             self._add_to_db(client_id)
             self._remove_client(client_id)
-            bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников.")
+            main_menu = main_menu_button()
+            bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников.", reply_markup=main_menu)
 
     def get_profile(self, client_id):
         conn = psycopg2.connect(self._db_path, sslmode='require')

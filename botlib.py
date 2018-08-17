@@ -9,6 +9,18 @@ def if_menu(text):
         return False
 
 
+def main_menu_button():
+    main_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    main_markup.add("Меню")
+    return main_markup
+
+
+def skip_button():
+    skip_markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    skip_markup.add("Пропустить")
+    return skip_markup
+
+
 def generate_menu():
     inline_markup = types.InlineKeyboardMarkup()
     buttons = [

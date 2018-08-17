@@ -39,9 +39,8 @@ create_favorite_db()
 
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
-    main_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    main_markup.add("Меню")
-    text = 'Этот бот поможет тебе узнать о ближайших лекциях.\nЧтобы получить актуальное расписание введи /get'
+    main_markup = main_menu_button()
+    text = 'Приветствую! С помощью этого бота ты можешь отслеживать расписание докладов и заводить новые знакомства.'
     bot.send_message(message.chat.id, text, reply_markup=main_markup)
 
     text = 'Что я могу для тебя сделать?'
@@ -115,17 +114,17 @@ def handle_photo(message):
         bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
     else:
         auth_handler.make_step(message.chat.id, message, bot)
-    if True:
-        file_info = bot.get_file(message.photo[0].file_id)
-        downloaded = bot.download_file(file_info.file_path)
-        # print(file_info.file_path, file_info.file_size)
-
-        src = IMG_PATH + str(message.chat.id)
-        with open(src, 'wb') as new_file:
-            new_file.write(downloaded)
-        # bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id), 'rb'))
-    # except Exception as e:
-    #     bot.send_message(message.chat.id, e.args)
+    # if True:
+    #     file_info = bot.get_file(message.photo[0].file_id)
+    #     downloaded = bot.download_file(file_info.file_path)
+    #     # print(file_info.file_path, file_info.file_size)
+    #
+    #     src = IMG_PATH + str(message.chat.id)
+    #     with open(src, 'wb') as new_file:
+    #         new_file.write(downloaded)
+    #     # bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id), 'rb'))
+    # # except Exception as e:
+    # #     bot.send_message(message.chat.id, e.args)
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -202,14 +201,16 @@ def callback(call):
         text = 'Полная информация об участнике:\nИмя: {0}\nГде работает: {1}\nИнтересы: {2}\nUsername: @{3}' \
                ''.format(info['fullname'], info['job'], info['interests'], info['username'])
         inline_markup = generate_more_users()
+        if info['photo'] != NO_PHOTO_FLAG:
+            bot.send_photo(cid, open(info['photo'], 'rb'))
         bot.send_message(cid, text, reply_markup=inline_markup)
-        bot.send_photo(cid, open(info['photo'], 'rb'))
 
         info = auth_handler.get_profile(cid)
         text = 'Участник дал согласие на ваш запрос. Полная информация:\nИмя: {0}\nГде работает: {1}\nИнтересы: ' \
                '{2}\nUsername: @{3}'.format(info['fullname'], info['job'], info['interests'], info['username'])
+        if info['photo'] != NO_PHOTO_FLAG:
+            bot.send_photo(pid, open(info['photo'], 'rb'))
         bot.send_message(pid, text)
-        bot.send_photo(pid, open(info['photo'], 'rb'))
 
     elif call.data == 'more_users':
         p = auth_handler.get_participant(cid)
@@ -233,7 +234,8 @@ def callback(call):
         else:
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile['fullname'], profile['job'],
                                                                         profile['interests'])
-            bot.send_photo(cid, open(profile['photo'], 'rb'))
+            if profile['photo'] != NO_PHOTO_FLAG:
+                bot.send_photo(cid, open(profile['photo'], 'rb'))
         bot.send_message(cid, text)
 
     elif call.data == 'FAQ':
