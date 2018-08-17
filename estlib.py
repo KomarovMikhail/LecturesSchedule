@@ -12,8 +12,7 @@ class EstimatesHandler:
     def _init_db(self):
         conn = psycopg2.connect(self._db_url, sslmode='require')
         cursor = conn.cursor()
-        cursor.execute(IF_DROP_ESTIMATES)
-        cursor.execute(CREATE_ESTIMATES)
+        cursor.execute(IF_CREATE_ESTIMATES)
         conn.commit()
         conn.close()
 

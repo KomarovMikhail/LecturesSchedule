@@ -7,8 +7,7 @@ from exeptions.custom_exeptions import *
 def create_favorite_db():
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cursor = conn.cursor()
-    cursor.execute(IF_DROP_FAVORITE)
-    cursor.execute(CREATE_FAVORITE)
+    cursor.execute(IF_CREATE_FAVORITE)
     conn.commit()
     conn.close()
 
