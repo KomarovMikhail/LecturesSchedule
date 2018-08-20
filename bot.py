@@ -202,14 +202,20 @@ def callback(call):
                ''.format(info['fullname'], info['job'], info['interests'], info['username'])
         inline_markup = generate_more_users()
         if info['photo'] != NO_PHOTO_FLAG:
-            bot.send_photo(cid, open(info['photo'], 'rb'))
+            try:
+                bot.send_photo(cid, open(info['photo'], 'rb'))
+            except FileNotFoundError:
+                pass
         bot.send_message(cid, text, reply_markup=inline_markup)
 
         info = auth_handler.get_profile(cid)
         text = 'Участник дал согласие на ваш запрос. Полная информация:\nИмя: {0}\nГде работает: {1}\nИнтересы: ' \
                '{2}\nUsername: @{3}'.format(info['fullname'], info['job'], info['interests'], info['username'])
         if info['photo'] != NO_PHOTO_FLAG:
-            bot.send_photo(pid, open(info['photo'], 'rb'))
+            try:
+                bot.send_photo(pid, open(info['photo'], 'rb'))
+            except FileNotFoundError:
+                pass
         bot.send_message(pid, text)
 
     elif call.data == 'more_users':
@@ -235,7 +241,10 @@ def callback(call):
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile['fullname'], profile['job'],
                                                                         profile['interests'])
             if profile['photo'] != NO_PHOTO_FLAG:
-                bot.send_photo(cid, open(profile['photo'], 'rb'))
+                try:
+                    bot.send_photo(cid, open(profile['photo'], 'rb'))
+                except FileNotFoundError:
+                    pass
         bot.send_message(cid, text)
 
     elif call.data == 'FAQ':
