@@ -50,10 +50,15 @@ class AuthHandler:
         conn.commit()
         conn.close()
 
+    def _exists_prev(self, client_id):
+        return self._auth_queue[client_id]['prev'] is not None
+
     def add_client(self, client_id):
+        prev = self.get_profile(client_id)
         self._auth_queue[client_id] = {
             'step': 0,
-            'data': []
+            'data': [],
+            'prev': prev
         }
 
     def is_in_queue(self, client_id):
@@ -78,21 +83,30 @@ class AuthHandler:
             if message.text != 'Пропустить':
                 self._append_data(client_id, message.text)
             else:
-                self._append_data(client_id, 'Не указано')
+                if self._exists_prev(client_id):
+                    self._append_data(client_id, self._auth_queue[client_id]['name'])
+                else:
+                    self._append_data(client_id, 'Не указано')
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Кем ты работаешь?", reply_markup=reply_markup)
         elif step == 2:
             if message.text != 'Пропустить':
                 self._append_data(client_id, message.text)
             else:
-                self._append_data(client_id, 'Не указано')
+                if self._exists_prev(client_id):
+                    self._append_data(client_id, self._auth_queue[client_id]['job'])
+                else:
+                    self._append_data(client_id, 'Не указано')
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Расскажи немного о себе и своих интересах.", reply_markup=reply_markup)
         elif step == 3:
             if message.text != 'Пропустить':
                 self._append_data(client_id, message.text)
             else:
-                self._append_data(client_id, 'Не указано')
+                if self._exists_prev(client_id):
+                    self._append_data(client_id, self._auth_queue[client_id]['interests'])
+                else:
+                    self._append_data(client_id, 'Не указано')
             self._append_data(client_id, "B'1'")
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.", reply_markup=reply_markup)
@@ -107,7 +121,10 @@ class AuthHandler:
                     new_file.write(downloaded)
                 self._append_data(client_id, src)
             else:
-                self._append_data(client_id, NO_PHOTO_FLAG)
+                if self._exists_prev(client_id):
+                    self._append_data(client_id, self._auth_queue[client_id]['photo'])
+                else:
+                    self._append_data(client_id, NO_PHOTO_FLAG)
 
             self._add_to_db(client_id)
             self._remove_client(client_id)
