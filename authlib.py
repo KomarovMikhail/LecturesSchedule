@@ -84,7 +84,7 @@ class AuthHandler:
                 self._append_data(client_id, message.text)
             else:
                 if self._exists_prev(client_id):
-                    self._append_data(client_id, self._auth_queue[client_id]['name'])
+                    self._append_data(client_id, self._auth_queue[client_id]['prev']['name'])
                 else:
                     self._append_data(client_id, 'Не указано')
             self._increment_step(client_id)
@@ -94,7 +94,7 @@ class AuthHandler:
                 self._append_data(client_id, message.text)
             else:
                 if self._exists_prev(client_id):
-                    self._append_data(client_id, self._auth_queue[client_id]['job'])
+                    self._append_data(client_id, self._auth_queue[client_id]['prev']['job'])
                 else:
                     self._append_data(client_id, 'Не указано')
             self._increment_step(client_id)
@@ -104,7 +104,7 @@ class AuthHandler:
                 self._append_data(client_id, message.text)
             else:
                 if self._exists_prev(client_id):
-                    self._append_data(client_id, self._auth_queue[client_id]['interests'])
+                    self._append_data(client_id, self._auth_queue[client_id]['prev']['interests'])
                 else:
                     self._append_data(client_id, 'Не указано')
             self._append_data(client_id, "B'1'")
@@ -122,7 +122,7 @@ class AuthHandler:
                 self._append_data(client_id, src)
             else:
                 if self._exists_prev(client_id):
-                    self._append_data(client_id, self._auth_queue[client_id]['photo'])
+                    self._append_data(client_id, self._auth_queue[client_id]['prev']['photo'])
                 else:
                     self._append_data(client_id, NO_PHOTO_FLAG)
 
