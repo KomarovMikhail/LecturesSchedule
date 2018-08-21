@@ -112,7 +112,8 @@ class AuthHandler:
             bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.", reply_markup=reply_markup)
         elif step == 4:
             if message.text != 'Пропустить':
-                file_info = bot.get_file(message.photo[0].file_id)
+                print("PHOTO LEN: ", len(message.photo))
+                file_info = bot.get_file(message.photo[-1].file_id)
                 downloaded = bot.download_file(file_info.file_path)
                 print(file_info.file_path, file_info.file_size)
 
