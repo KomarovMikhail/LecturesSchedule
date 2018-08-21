@@ -9,6 +9,8 @@ CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaIuizRlU2hODjbpXeyd
 FAQ_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQaIuizRlU2hODjbpXeydGqq67f5-cU1G7-7xIgMs7m9bpiAMRsO6pt27_gFKozauiudddO4pn_3HA8/pub?gid=1390482820&single=true&output=csv'
 
 APP_NAME = 'voyage-livre-89482.herokuapp.com'
+HOST = "0.0.0.0"
+PORT = int(os.environ.get('PORT', 5000))
 
 IMG_PATH = 'imgs/'
 

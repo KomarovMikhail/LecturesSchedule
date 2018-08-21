@@ -112,10 +112,8 @@ class AuthHandler:
             bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.", reply_markup=reply_markup)
         elif step == 4:
             if message.text != 'Пропустить':
-                print("PHOTO LEN: ", len(message.photo))
                 file_info = bot.get_file(message.photo[-1].file_id)
                 downloaded = bot.download_file(file_info.file_path)
-                print(file_info.file_path, file_info.file_size)
 
                 src = IMG_PATH + str(message.chat.id)
                 with open(src, 'wb') as new_file:
@@ -143,7 +141,6 @@ class AuthHandler:
         if len(data) == 0:
             return None
         else:
-            # return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[0][6]]
             return {
                 'id': client_id,
                 'username': data[0][0],
@@ -168,16 +165,13 @@ class AuthHandler:
         cursor = conn.cursor()
         cursor.execute(SELECT_POSSIBLE_IDS_PARTICIPANTS.format(client_id))
         data = cursor.fetchall()
-        print(data)
         possible = [item[0] for item in data]
         try:
             r = random.choice(possible)
-            print(r)
             cursor.execute(SELECT_BY_ID_PARTICIPANTS.format(r))
             data = cursor.fetchall()
             conn.commit()
             conn.close()
-            # return [data[0][0], data[0][1], data[0][2], data[0][3], data[0][4]]
             return {
                 'id': r,
                 'username': data[0][0],

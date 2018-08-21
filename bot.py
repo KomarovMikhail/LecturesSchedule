@@ -51,7 +51,6 @@ def handle_start_help(message):
 @bot.message_handler(commands=['test'])
 def test_db(message):
     users = auth_handler.get_users()
-    print(auth_handler.get_all_ids())
     if len(users) == 0:
         bot.send_message(message.chat.id, "Нет зарегестрированных пользователей.")
     else:
@@ -114,22 +113,10 @@ def handle_photo(message):
         bot.send_message(message.chat.id, "Извини, я тебя не понимаю. Попробуй еще раз.")
     else:
         auth_handler.make_step(message.chat.id, message, bot)
-    # if True:
-    #     file_info = bot.get_file(message.photo[0].file_id)
-    #     downloaded = bot.download_file(file_info.file_path)
-    #     # print(file_info.file_path, file_info.file_size)
-    #
-    #     src = IMG_PATH + str(message.chat.id)
-    #     with open(src, 'wb') as new_file:
-    #         new_file.write(downloaded)
-    #     # bot.send_photo(message.chat.id, open(IMG_PATH + str(message.chat.id), 'rb'))
-    # # except Exception as e:
-    # #     bot.send_message(message.chat.id, e.args)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
-    print(call.data)
     cid = call.message.chat.id
 
     if call.data == 'Показать расписание' or call.data == 'more_lectures':
@@ -400,4 +387,4 @@ def webhook():
 
 
 if __name__ == '__main__':
-    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+    server.run(host=HOST, port=PORT)
