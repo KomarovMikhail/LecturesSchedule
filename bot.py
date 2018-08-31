@@ -126,7 +126,8 @@ def callback(call):
         try:
             nearest = ss_handler.get_lectures(cid)
             for l in nearest:
-                text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
+                text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
+                       ''.format(l['name'], l['start'], l['lecturer'], l['where'])
                 inline_markup = generate_lectures_list(l['id'], already_added=in_favorite(cid, l['id']))
                 bot.send_message(cid, text, reply_markup=inline_markup)
             text = 'Жми "Еще доклады", если хочешь больше докладоов.'
@@ -307,8 +308,9 @@ def callback(call):
                                   '(Нажми {0} чтобы уборать доклад из избранного)'.format(CROSS_MARK))
             lectures = up_handler.get_lectures_by_ids(lids)
             for l in lectures:
-                text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
-                inline_markup = generate_favorite_list(l['id'])
+                text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
+                       ''.format(l['name'], l['start'], l['lecturer'], l['where'])
+                inline_markup = generate_lectures_list(l['id'], already_added=(not in_favorite(cid, l['id'])))
                 bot.send_message(cid, text, reply_markup=inline_markup)
 
     elif call.data == 'Задать вопрос организаторам':
@@ -336,8 +338,8 @@ def get_actual_schedule():
     for item in n_handler.get_data():
         time = sort_key(item)  # время начала доклада
         if now + delta > time and n_handler.need_to_send(item['id']):
-            text = 'Напоминание:\nВ {0} состоится доклад "{1}".\n' \
-                   'Не пропустите.'.format(item['start'], item['name'])
+            text = 'Напоминание:\nВ {0} состоится доклад "{1}".\nМесто проведения: {2}' \
+                   'Не пропустите.'.format(item['start'], item['name'], item['where'])
             inline_markup = generate_show_more(item['id'])
             for i in ids:
                 bot.send_message(i, text, reply_markup=inline_markup)
