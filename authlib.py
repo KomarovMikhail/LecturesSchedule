@@ -80,7 +80,10 @@ class AuthHandler:
             bot.send_message(message.chat.id, "Как тебя зовут?", reply_markup=reply_markup)
         elif step == 1:
             self._append_data(client_id, message.from_user.username)
-            if message.text != 'Пропустить':
+            if message.text == "Взять из профиля":
+                name = '{0} {1}'.format(message.from_user.first_name, message.from_user.last_name)
+                self._append_data(client_id, name)
+            elif message.text != 'Пропустить':
                 self._append_data(client_id, message.text)
             else:
                 if self._exists_prev(client_id):
@@ -114,7 +117,6 @@ class AuthHandler:
         elif step == 4:
             if message.text == "Взять из профиля":
                 request = bot.get_user_profile_photos(message.from_user.id)
-                print(request.photos[0])
                 file_info = bot.get_file(request.photos[0][-1].file_id)
                 downloaded = bot.download_file(file_info.file_path)
 
