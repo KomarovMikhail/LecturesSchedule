@@ -73,12 +73,13 @@ class AuthHandler:
         Прим.: на шаге 0 обрабатывается сообщение от бота, на последующих - от пользователя
         """
         step = self._get_step(client_id)
-        reply_markup = skip_button()
         if step == 0:
             self._append_data(client_id, message.chat.id)
             self._increment_step(client_id)
+            reply_markup = skip_button(take_from_profile=True)
             bot.send_message(message.chat.id, "Как тебя зовут?", reply_markup=reply_markup)
         elif step == 1:
+            reply_markup = skip_button()
             self._append_data(client_id, message.from_user.username)
             if message.text == "Взять из профиля":
                 name = '{0} {1}'.format(message.from_user.first_name, message.from_user.last_name)
@@ -93,6 +94,7 @@ class AuthHandler:
             self._increment_step(client_id)
             bot.send_message(message.chat.id, "Кем ты работаешь?", reply_markup=reply_markup)
         elif step == 2:
+            reply_markup = skip_button()
             if message.text != 'Пропустить':
                 self._append_data(client_id, message.text)
             else:
