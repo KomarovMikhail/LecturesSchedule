@@ -113,8 +113,15 @@ class AuthHandler:
             bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.", reply_markup=reply_markup)
         elif step == 4:
             if message.text == "Взять из профиля":
-                photos = bot.get_user_profile_photos(message.from_user.id)
-                print(photos[0])
+                request = bot.get_user_profile_photos(message.from_user.id)
+                print(request.photos[0])
+                file_info = bot.get_file(request.photos[0][-1].file_id)
+                downloaded = bot.download_file(file_info.file_path)
+
+                src = IMG_PATH + str(message.chat.id)
+                with open(src, 'wb') as new_file:
+                    new_file.write(downloaded)
+                self._append_data(client_id, src)
             elif message.text != 'Пропустить':
                 file_info = bot.get_file(message.photo[-1].file_id)
                 downloaded = bot.download_file(file_info.file_path)
