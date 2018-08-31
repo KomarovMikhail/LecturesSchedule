@@ -263,6 +263,8 @@ def callback(call):
             lecture = up_handler.get_lecture_by_id(lid)
             text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
             bot.send_message(cid, text)
+            bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
+                                          reply_markup=generate_lectures_list(lid, True))
         except AlreadyAddedError:
             bot.send_message(cid, 'Этот доклад уже добавлен в избранное.')
 
