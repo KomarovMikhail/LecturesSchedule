@@ -29,13 +29,17 @@ def generate_menu():
         ('Показать расписание', CLIPBOARD),
         ('Найти собеседника', SPEECH_BALLOON),
         ('Обновить профиль', PENCIL),
+        ('Сканировать визитку', MAGNIFYING_GLASS),
         ('Мой профиль', BUST),
         ('Мое избранное', FIRE),
         ('FAQ', QUESTION),
         ('Задать вопрос организаторам', ENVELOPE)
     ]
     for b in buttons:
-        inline_markup.add(types.InlineKeyboardButton(text=b[1] + b[0], callback_data=b[0]))
+        if b[0] == 'Сканировать визитку':
+            inline_markup.add(types.InlineKeyboardButton(text=b[1] + b[0], url='http://qrs.ly/iw4uqj5'))
+        else:
+            inline_markup.add(types.InlineKeyboardButton(text=b[1] + b[0], callback_data=b[0]))
     return inline_markup
 
 
