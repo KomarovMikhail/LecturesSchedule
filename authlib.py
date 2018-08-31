@@ -109,6 +109,7 @@ class AuthHandler:
                     self._append_data(client_id, 'Не указано')
             self._append_data(client_id, "B'1'")
             self._increment_step(client_id)
+            reply_markup = skip_button(take_from_profile=True)
             bot.send_message(message.chat.id, "Загрузи фото для твоего профиля.", reply_markup=reply_markup)
         elif step == 4:
             if message.text != 'Пропустить':
@@ -119,6 +120,9 @@ class AuthHandler:
                 with open(src, 'wb') as new_file:
                     new_file.write(downloaded)
                 self._append_data(client_id, src)
+            elif message.text == "Взять из профиля":
+                print(message)
+                # bot.get_user_profile_photos(message.from_user.id)
             else:
                 if self._exists_prev(client_id):
                     self._append_data(client_id, self._auth_queue[client_id]['prev']['photo'])

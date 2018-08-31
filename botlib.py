@@ -15,9 +15,11 @@ def main_menu_button():
     return main_markup
 
 
-def skip_button():
+def skip_button(take_from_profile=False):
     skip_markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     skip_markup.add("Пропустить")
+    if take_from_profile:
+        skip_markup.add("Взять из профиля")
     return skip_markup
 
 
