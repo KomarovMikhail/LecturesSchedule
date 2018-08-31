@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from constants.config import *
 import telebot
-from sslib import get_nearest, get_faq, sort_key, SSHandler
+from sslib import get_nearest, get_faq, sort_key, SSHandler, get_current
 import os
 from flask import Flask, request
 import logging
@@ -119,20 +119,36 @@ def handle_photo(message):
 def callback(call):
     cid = call.message.chat.id
 
-    if call.data == 'Показать расписание' or call.data == 'more_lectures':
-        if call.data == 'Показать расписание':
-            text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить доклад в "избранное")'.format(FIRE)]
-            bot.send_message(cid, text)
+    if call.data[:19] == 'Показать расписание':
+        option = call.data[19:]
+        if call.data == '':
+            bot.send_message(cid, 'Выбери опцию', reply_markup=generate_schedule_options())
         try:
-            nearest = ss_handler.get_lectures(cid)
-            for l in nearest:
-                text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
-                       ''.format(l['name'], l['start'], l['lecturer'], l['where'])
-                inline_markup = generate_lectures_list(l['id'], already_added=in_favorite(cid, l['id']))
-                bot.send_message(cid, text, reply_markup=inline_markup)
-            text = 'Жми "Еще доклады", если хочешь больше докладоов.'
-            inline_markup = generate_more_lectures()
-            bot.send_message(cid, text, reply_markup=inline_markup)
+            lectures = []
+            if option == '(full)':
+                text = ['Расписание ближайших докладов:\n(Нажми {0}({1}), чтобы добавить(удалить) доклад в "избранное")'
+                        ''.format(FIRE, CROSS_MARK)]
+                bot.send_message(cid, text)
+                lectures = ss_handler.get_lectures(cid)
+            elif option == '(more)':
+                lectures = ss_handler.get_lectures(cid)
+            elif option == '(current)':
+                lectures = get_current(CSV_URL)
+            elif option == '(upcoming)':
+                lectures = get_nearest(CSV_URL)
+            if len(lectures) == 0:
+                text = 'Извини, докладов по твоему запросу не найдено.'
+                bot.send_message(cid, text)
+            else:
+                for l in lectures:
+                    text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
+                           ''.format(l['name'], l['start'], l['lecturer'], l['where'])
+                    inline_markup = generate_lectures_list(l['id'], already_added=in_favorite(cid, l['id']))
+                    bot.send_message(cid, text, reply_markup=inline_markup)
+                if option == '(full)':
+                    text = 'Жми "Еще доклады", если хочешь посмотреть больше докладов.'
+                    inline_markup = generate_more_lectures()
+                    bot.send_message(cid, text, reply_markup=inline_markup)
         except TimeError:
             text = "ОШИБКА!\nИнформация о времени начала некоторых докладах заполнена неверно, " \
                    "поэтому в данный момент мы не можем ее отобразить. " \
@@ -307,7 +323,8 @@ def callback(call):
             bot.send_message(cid, 'У вас пока нет избранных докладов.')
         else:
             bot.send_message(cid, 'Избранные доклады:\n'
-                                  '(Нажми {0} чтобы уборать доклад из избранного)'.format(CROSS_MARK))
+                                  '(Нажми {0}({1}) чтобы убрать(добавить) доклад из "избранного")'
+                                  ''.format(CROSS_MARK, FIRE))
             lectures = up_handler.get_lectures_by_ids(lids)
             for l in lectures:
                 text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \

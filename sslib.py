@@ -41,6 +41,27 @@ def is_upcoming(lecture):
         raise TimeError
 
 
+def is_current(lecture):
+    try:
+        date = lecture['date'].split('.')
+        day = int(date[0])
+        month = int(date[1])
+
+        start_time = lecture['start'].split(':')
+        start_hour = int(start_time[0])
+        start_minute = int(start_time[1])
+
+        end_time = lecture['end'].split(':')
+        end_hour = int(end_time[0])
+        end_minute = int(end_time[1])
+
+        start = datetime(datetime.now().year, month, day, start_hour, start_minute)
+        end = datetime(datetime.now().year, month, day, end_hour, end_minute)
+        return start < datetime.now() < end
+    except ValueError:
+        raise TimeError
+
+
 def sort_key(lecture):
     try:
         date = lecture['date'].split('.')
@@ -63,6 +84,15 @@ def get_nearest(csv_url):
     upcoming = sorted(upcoming, key=sort_key)
 
     return upcoming[:3]
+
+
+def get_current(csv_url):
+    lectures = get_spreadsheet(csv_url)
+
+    current = [lecture for lecture in lectures if is_current(lecture)]
+    current = sorted(current, key=sort_key)
+
+    return current
 
 
 def get_faq(from_url):

@@ -43,6 +43,18 @@ def generate_menu():
     return inline_markup
 
 
+def generate_schedule_options():
+    inline_markup = types.InlineKeyboardMarkup()
+    data = [
+        ('Полное расписание', 'Показать расписание(full)'),
+        ('Идет сейчас', 'Показать расписание(current)'),
+        ('Ближайние доклады', 'Показать расписание(upcoming)')
+    ]
+    for item in data:
+        inline_markup.add(types.InlineKeyboardButton(text=item[0], callback_data=item[1]))
+    return inline_markup
+
+
 def generate_answer_buttons(pid):
     inline_markup = types.InlineKeyboardMarkup()
     b_1 = types.InlineKeyboardButton(text=THUMBS_UP, callback_data='like' + str(pid))
@@ -106,7 +118,7 @@ def generate_show_more(lid):
 
 def generate_more_lectures():
     inline_markup = types.InlineKeyboardMarkup()
-    button = types.InlineKeyboardButton(text='Еще доклады...', callback_data='more_lectures')
+    button = types.InlineKeyboardButton(text='Еще доклады...', callback_data='Показать расписание(more)')
     inline_markup.add(button)
     return inline_markup
 
