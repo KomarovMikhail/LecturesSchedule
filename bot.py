@@ -123,6 +123,7 @@ def callback(call):
         option = call.data[19:]
         if call.data == '':
             bot.send_message(cid, 'Выбери опцию', reply_markup=generate_schedule_options())
+            return
         try:
             lectures = []
             if option == '(full)':
