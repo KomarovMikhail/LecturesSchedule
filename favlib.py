@@ -12,6 +12,22 @@ def create_favorite_db():
     conn.close()
 
 
+def in_favorite(cid, lid):
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cursor = conn.cursor()
+
+    cursor.execute(SELECT_BY_ID_FAVORITE.format(cid))
+    data = cursor.fetchall()
+    result = False
+    if len(data) != 0:
+        old_ids = data[0][0]
+        if lid in old_ids.split(','):
+            result = True
+    conn.commit()
+    conn.close()
+    return result
+
+
 def add_to_favorite(cid, lid):
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cursor = conn.cursor()

@@ -127,7 +127,7 @@ def callback(call):
             nearest = ss_handler.get_lectures(cid)
             for l in nearest:
                 text = 'Что: {0}\nКогда: {1}\nКто читает: {2}'.format(l['name'], l['start'], l['lecturer'])
-                inline_markup = generate_lectures_list(l['id'])
+                inline_markup = generate_lectures_list(l['id'], already_added=in_favorite(cid, l['id']))
                 bot.send_message(cid, text, reply_markup=inline_markup)
             text = 'Жми "Еще доклады", если хочешь больше докладоов.'
             inline_markup = generate_more_lectures()
