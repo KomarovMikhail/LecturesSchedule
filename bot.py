@@ -121,7 +121,7 @@ def callback(call):
 
     if call.data[:19] == 'Показать расписание':
         option = call.data[19:]
-        if call.data == '':
+        if option == '':
             bot.send_message(cid, 'Выбери опцию', reply_markup=generate_schedule_options())
             return
         try:
