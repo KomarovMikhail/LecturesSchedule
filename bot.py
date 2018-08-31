@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from constants.config import *
 import telebot
-from sslib import get_nearest, get_faq, sort_key, SSHandler, get_current
-import os
+from sslib import get_nearest, get_faq, sort_key, SSHandler, get_current, get_passed_lectures
 from flask import Flask, request
 import logging
 from botlib import *
@@ -33,6 +32,11 @@ scheduler.start()
 # Проверяет расписание на обновления
 updates = BackgroundScheduler()
 updates.start()
+
+# Предлагает оценить избранные доклады по окончании
+estimate_fav_handler = BackgroundScheduler()
+estimate_fav_handler.start()
+
 
 create_favorite_db()
 
@@ -388,8 +392,20 @@ def check_updates():
             bot.send_message(i, item[0], reply_markup=inline_markup)
 
 
+def ask_for_estimation():
+    lectures = get_passed_lectures(CSV_URL)
+    for lecture in lectures:
+        cids = get_user_ids(lecture['id'])
+        text = 'Несколько минут назад закончился доклад {0} ({1})\nПредлагаем вам оценить его.' \
+               ''.format(lecture['name'], lecture['lecturer'])
+        inline_markup = generate_esimate_lecture(lecture['id'])
+        for cid in cids:
+            bot.send_message(cid, text, reply_markup=inline_markup)
+
+
 scheduler.add_job(get_actual_schedule, 'interval', minutes=1)
 updates.add_job(check_updates, 'interval', minutes=5)
+estimate_fav_handler.add_job(ask_for_estimation, 'interval', minutes=5)
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)

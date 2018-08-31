@@ -28,6 +28,22 @@ def in_favorite(cid, lid):
     return result
 
 
+def get_user_ids(lid):
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cursor = conn.cursor()
+
+    cursor.execute(SELECT_ALL_FAVORITE)
+    data = cursor.fetchall()
+    result = []
+    for item in data:
+        old_ids = item[1]
+        if lid in old_ids.split(','):
+            result.append(item[0])
+    conn.commit()
+    conn.close()
+    return result
+
+
 def add_to_favorite(cid, lid):
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
     cursor = conn.cursor()

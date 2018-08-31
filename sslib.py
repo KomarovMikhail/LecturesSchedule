@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from exeptions.custom_exeptions import *
 
@@ -60,6 +60,31 @@ def is_current(lecture):
         return start < datetime.now() < end
     except ValueError:
         raise TimeError
+
+
+def is_finished(lecture, min_ago):
+    try:
+        date = lecture['date'].split('.')
+        day = int(date[0])
+        month = int(date[1])
+
+        lecture_time = lecture['end'].split(':')
+        hour = int(lecture_time[0])
+        minute = int(lecture_time[1])
+
+        now = datetime.now()
+        time = datetime(now.year, month, day, hour, minute)
+        delta = timedelta(minutes=min_ago)
+
+        return now - delta <= time <= now
+    except ValueError:
+        pass
+
+
+def get_passed_lectures(csv_url, min_ago=5):
+    lectures = get_spreadsheet(csv_url)
+    passed = [lecture for lecture in lectures if is_finished(lecture, min_ago)]
+    return passed
 
 
 def sort_key(lecture):

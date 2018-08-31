@@ -108,6 +108,16 @@ def generate_favorite_list(lid):
     return inline_markup
 
 
+def generate_esimate_lecture(lid):
+    inline_markup = types.InlineKeyboardMarkup()
+    callback_data_1 = 'get_full_info{0}'.format(lid)
+    callback_data_2 = 'estimate{0}'.format(lid)
+    b_1 = types.InlineKeyboardButton(text='Подробнее...', callback_data=callback_data_1)
+    b_2 = types.InlineKeyboardButton(text='Оценить', callback_data=callback_data_2)
+    inline_markup.add(b_1, b_2)
+    return inline_markup
+
+
 def generate_show_more(lid):
     inline_markup = types.InlineKeyboardMarkup()
     callback_data = 'get_full_info{0}'.format(lid)
