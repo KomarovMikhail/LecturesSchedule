@@ -73,7 +73,6 @@ class AuthHandler:
         Прим.: на шаге 0 обрабатывается сообщение от бота, на последующих - от пользователя
         """
         step = self._get_step(client_id)
-        print(self._auth_queue)
         if step == 0:
             self._append_data(client_id, message.chat.id)
             self._increment_step(client_id)

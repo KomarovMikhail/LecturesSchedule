@@ -298,7 +298,7 @@ def callback(call):
             text = 'Доклад "{0}" удален из избранного.'.format(lecture['name'])
             bot.send_message(cid, text)
             bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
-                                          reply_markup=generate_lectures_list(lid, already_added=False))
+                                          reply_markup=generate_favorite_list(lid, already_removed=True))
         except AlreadyRemovedError:
             bot.send_message(cid, 'Этот доклад уже удален из избранного.')
 
@@ -334,7 +334,7 @@ def callback(call):
             for l in lectures:
                 text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
                        ''.format(l['name'], l['start'], l['lecturer'], l['where'])
-                inline_markup = generate_lectures_list(l['id'], already_added=in_favorite(cid, l['id']))
+                inline_markup = generate_favorite_list(l['id'])
                 bot.send_message(cid, text, reply_markup=inline_markup)
 
     elif call.data == 'Задать вопрос организаторам':
