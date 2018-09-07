@@ -157,7 +157,11 @@ class AuthHandler:
             text = "Спасибо! Я записал тебя в список участников. Вот твой текущий профиль:\nИмя: {0}\nГде работаешь: " \
                    "{1}\nИнтересы: {2}".format(user['fullname'], user['job'], user['interests'])
             bot.send_message(client_id, text, reply_markup=main_menu)
-            bot.send_photo(client_id, open(user['photo'], 'rb'))
+
+            src = IMG_PATH + str(message.chat.id) + 'buf'
+            with open(src, 'wb') as new_file:
+                new_file.write(user['photo'])
+            bot.send_photo(client_id, open(src, 'rb'))
 
     def get_profile(self, client_id):
         conn = psycopg2.connect(self._db_path, sslmode='require')
