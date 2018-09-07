@@ -11,18 +11,22 @@ DELETE_FAVORITE = "DELETE FROM favorite WHERE id = {0}"
 
 
 CREATE_PARTICIPANTS = "CREATE TABLE participants(id INT, username TEXT, fullname TEXT," \
-                      "job TEXT, interests TEXT, active BIT, photo TEXT, PRIMARY KEY(id))"
+                      "job TEXT, interests TEXT, active BIT, photo BYTEA, PRIMARY KEY(id))"
 IF_CREATE_PARTICIPANTS = "CREATE TABLE IF NOT EXISTS participants(id INT, username TEXT, fullname TEXT," \
                          "job TEXT, interests TEXT, active BIT, photo TEXT, PRIMARY KEY(id))"
 IF_DROP_PARTICIPANTS = "DROP TABLE IF EXISTS participants"
 DROP_PARTICIPANTS = "DROP TABLE participants"
 SELECT_ALL_PARTICIPANTS = "SELECT * FROM participants"
+# INSERT_PARTICIPANTS = "INSERT INTO participants(id, username, fullname, job, interests, active, photo) " \
+#                       "VALUES({0}, '{1}', '{2}', '{3}', '{4}', {5}, '{6}')"
 INSERT_PARTICIPANTS = "INSERT INTO participants(id, username, fullname, job, interests, active, photo) " \
-                      "VALUES({0}, '{1}', '{2}', '{3}', '{4}', {5}, '{6}')"
+                      "VALUES({0}, '{1}', '{2}', '{3}', '{4}', {5}, $(data)s)"
 SELECT_BY_ID_PARTICIPANTS = "SELECT username, fullname, job, interests, active, photo " \
                             "FROM participants WHERE id = {0}"
+# UPDATE_PARTICIPANTS = "UPDATE participants SET username = '{1}', fullname = '{2}', job = '{3}', interests = '{4}', " \
+#                       "active = {5}, photo = '{6}' WHERE id = {0}"
 UPDATE_PARTICIPANTS = "UPDATE participants SET username = '{1}', fullname = '{2}', job = '{3}', interests = '{4}', " \
-                      "active = {5}, photo = '{6}' WHERE id = {0}"
+                      "active = {5}, photo = $(data)s WHERE id = {0}"
 EXISTS_PARTICIPANTS = "SELECT EXISTS(SELECT id FROM participants WHERE id = {0})"
 DELETE_PARTICIPANTS = "DELETE FROM participants WHERE id = {0}"
 SELECT_ALL_IDS_PARTICIPANTS = "SELECT id FROM participants"

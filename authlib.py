@@ -42,10 +42,19 @@ class AuthHandler:
         data = self._auth_queue[client_id]['data']
         cursor.execute(EXISTS_PARTICIPANTS.format(client_id))
         exists = cursor.fetchall()
+
+        with open(data[6], 'rb') as img:
+            img_data = img.read()
+        data_insert_img = {
+            'data': psycopg2.Binary(img_data)
+        }
+
         if exists[0][0]:
-            cursor.execute(UPDATE_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
+            cursor.execute(UPDATE_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5]),
+                           data_insert_img)
         else:
-            cursor.execute(INSERT_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5], data[6]))
+            cursor.execute(INSERT_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5]),
+                           data_insert_img)
 
         conn.commit()
         conn.close()
