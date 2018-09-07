@@ -280,16 +280,15 @@ def callback(call):
 
     elif call.data[:10] == 'add_to_fav':
         lid = call.data[10:]
+        lecture = up_handler.get_lecture_by_id(lid)
         try:
             add_to_favorite(cid, lid)
-            lecture = up_handler.get_lecture_by_id(lid)
             text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
             bot.send_message(cid, text)
             bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
                                           reply_markup=generate_lectures_list(lid, already_added=True))
         except AlreadyAddedError:
             remove_from_favorite(cid, lid)
-            lecture = up_handler.get_lecture_by_id(lid)
             text = 'Доклад "{0}" удален из избранного.'.format(lecture['name'])
             bot.send_message(cid, text)
             bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
@@ -297,16 +296,15 @@ def callback(call):
 
     elif call.data[:12] == 'rem_from_fav':
         lid = call.data[12:]
+        lecture = up_handler.get_lecture_by_id(lid)
         try:
             remove_from_favorite(cid, lid)
-            lecture = up_handler.get_lecture_by_id(lid)
             text = 'Доклад "{0}" удален из избранного.'.format(lecture['name'])
             bot.send_message(cid, text)
             bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
                                           reply_markup=generate_favorite_list(lid, already_removed=True))
         except AlreadyRemovedError:
             add_to_favorite(cid, lid)
-            lecture = up_handler.get_lecture_by_id(lid)
             text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
             bot.send_message(cid, text)
             bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
