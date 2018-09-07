@@ -73,6 +73,7 @@ class AuthHandler:
         Прим.: на шаге 0 обрабатывается сообщение от бота, на последующих - от пользователя
         """
         step = self._get_step(client_id)
+        print(self._auth_queue)
         if step == 0:
             self._append_data(client_id, message.chat.id)
             self._increment_step(client_id)
@@ -143,7 +144,11 @@ class AuthHandler:
             self._add_to_db(client_id)
             self._remove_client(client_id)
             main_menu = main_menu_button()
-            bot.send_message(message.chat.id, "Спасибо! Я записал тебя в список участников.", reply_markup=main_menu)
+            user = self.get_profile(client_id)
+            text = "Спасибо! Я записал тебя в список участников. Вот твой текущий профиль:\nИмя: {0}\nГде работаешь: " \
+                   "{1}\nИнтересы: {2}".format(user['fullname'], user['job'], user['interests'])
+            bot.send_message(client_id, text, reply_markup=main_menu)
+            bot.send_photo(client_id, open(user['photo'], 'rb'))
 
     def get_profile(self, client_id):
         conn = psycopg2.connect(self._db_path, sslmode='require')
