@@ -1,9 +1,8 @@
 import random
-from constants.config import IMG_PATH, NO_PHOTO_FLAG
+from constants.config import IMG_PATH, NO_PHOTO_FLAG, PHOTO_ALREADY_EXISTS_FLAG
 import psycopg2
 from constants.queries import *
 from botlib import skip_button, main_menu_button
-import array
 
 
 class AuthHandler:
@@ -45,16 +44,25 @@ class AuthHandler:
                 'data': 'NULL'
             }
         else:
-            data_insert_img = {
-                'data': psycopg2.Binary(open(data[6], 'rb').read())
-            }
+            if data[6] != PHOTO_ALREADY_EXISTS_FLAG:
+                data_insert_img = {
+                    'data': psycopg2.Binary(open(data[6], 'rb').read())
+                }
 
         if exists[0][0]:
-            cursor.execute(UPDATE_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5]),
-                           data_insert_img)
+            if data[6] != PHOTO_ALREADY_EXISTS_FLAG:
+                cursor.execute(UPDATE_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5]),
+                               data_insert_img)
+            else:
+                cursor.execute(UPDATE_PARTICIPANTS_NO_PHOTO.format(data[0], data[1], data[2],
+                                                                   data[3], data[4], data[5]))
         else:
-            cursor.execute(INSERT_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5]),
-                           data_insert_img)
+            if data[6] != PHOTO_ALREADY_EXISTS_FLAG:
+                cursor.execute(INSERT_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5]),
+                               data_insert_img)
+            else:
+                cursor.execute(INSERT_PARTICIPANTS_NO_PHOTO.format(data[0], data[1], data[2],
+                                                                   data[3], data[4], data[5]))
 
         conn.commit()
         conn.close()
@@ -145,7 +153,7 @@ class AuthHandler:
                 self._append_data(client_id, src)
             else:
                 if self._exists_prev(client_id):
-                    self._append_data(client_id, self._auth_queue[client_id]['prev']['photo'])
+                    self._append_data(client_id, PHOTO_ALREADY_EXISTS_FLAG)
                 else:
                     self._append_data(client_id, NO_PHOTO_FLAG)
 

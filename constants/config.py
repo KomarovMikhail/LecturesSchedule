@@ -24,3 +24,4 @@ SPREADSHEET_ERROR_MESSAGE = '{0}ВНИМАНИЕ АДМИНИСТРАТОРАМ{
                             'Просьба исправить в срочном порядке, ' \
                             'чтобы продолжить полноценную работу сервиса.'.format(EXCLAMATION_POINT)
 NO_PHOTO_FLAG = 'no_photo_flag'
+PHOTO_ALREADY_EXISTS_FLAG = 'photo_already_exists'

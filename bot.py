@@ -131,7 +131,7 @@ def callback(call):
         try:
             lectures = []
             if option == '(full)':
-                text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить(удалить) доклад в "избранное")'
+                text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить доклад в "избранное")'
                         ''.format(FIRE)]
                 bot.send_message(cid, text)
                 lectures = ss_handler.get_lectures(cid)
@@ -146,8 +146,8 @@ def callback(call):
                 bot.send_message(cid, text)
             else:
                 for l in lectures:
-                    text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
-                           ''.format(l['name'], l['start'], l['lecturer'], l['where'])
+                    text = 'Что: {0}\nГде: {3}\nКогда: {4} в {1}\nКто читает: {2}' \
+                           ''.format(l['name'], l['start'], l['lecturer'], l['where'], l['date'])
                     inline_markup = generate_lectures_list(l['id'], already_added=in_favorite(cid, l['id']))
                     bot.send_message(cid, text, reply_markup=inline_markup)
                 if option == '(full)' or option == '(more)':
@@ -273,15 +273,15 @@ def callback(call):
         lecture = up_handler.get_lecture_by_id(lid)
         try:
             mark = est_handler.get_mark(int(lid))
-            text = '{0} (Читает {1})\nМесто проведения: {2}\nВремя: {3}\n' \
+            text = '{0} (Читает {1})\nМесто проведения: {2}\nДата: {7}\nВремя начала: {3}\nВремя окончания: {6}\n' \
                    'Краткое описание: {4}\nСредняя оценка доклада: {5}' \
-                   ''.format(lecture['name'], lecture['lecturer'],
-                             lecture['where'], lecture['start'], lecture['about'], mark)
+                   ''.format(lecture['name'], lecture['lecturer'], lecture['where'], lecture['start'],
+                             lecture['about'], mark, lecture['end'], lecture['date'])
         except NoEstimationsError:
-            text = '{0} (Читает {1})\nМесто проведения: {2}\nВремя: {3}\n' \
+            text = '{0} (Читает {1})\nМесто проведения: {2}\nДата: {6}\nВремя начала: {3}\nВремя окончания: {5}\n' \
                    'Краткое описание: {4}' \
                    ''.format(lecture['name'], lecture['lecturer'],
-                             lecture['where'], lecture['start'], lecture['about'])
+                             lecture['where'], lecture['start'], lecture['about'], lecture['end'], lecture['date'])
         bot.send_message(cid, text)
 
     elif call.data[:10] == 'add_to_fav':
@@ -342,12 +342,12 @@ def callback(call):
             bot.send_message(cid, 'У вас пока нет избранных докладов.')
         else:
             bot.send_message(cid, 'Избранные доклады:\n'
-                                  '(Нажми {0} чтобы убрать(добавить) доклад из "избранного")'
+                                  '(Нажми {0} чтобы убрать доклад из "избранного")'
                                   ''.format(CROSS_MARK))
             lectures = up_handler.get_lectures_by_ids(lids)
             for l in lectures:
-                text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
-                       ''.format(l['name'], l['start'], l['lecturer'], l['where'])
+                text = 'Что: {0}\nГде: {3}\nКогда: {4} в {1}\nКто читает: {2}' \
+                       ''.format(l['name'], l['start'], l['lecturer'], l['where'], l['date'])
                 inline_markup = generate_favorite_list(l['id'])
                 bot.send_message(cid, text, reply_markup=inline_markup)
 
