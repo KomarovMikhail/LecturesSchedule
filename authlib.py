@@ -162,12 +162,13 @@ class AuthHandler:
                    "{1}\nИнтересы: {2}".format(user['fullname'], user['job'], user['interests'])
             bot.send_message(client_id, text, reply_markup=main_menu)
 
-            print(user['photo'])
-            if user['photo'] != NO_PHOTO_FLAG:
+            try:
                 src = IMG_PATH + str(message.chat.id)
                 with open(src, 'wb') as new_file:
                     new_file.write(user['photo'])
                 bot.send_photo(client_id, open(src, 'rb'))
+            except Exception:
+                pass
 
     def get_profile(self, client_id):
         conn = psycopg2.connect(self._db_path, sslmode='require')

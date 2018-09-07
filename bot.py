@@ -210,27 +210,25 @@ def callback(call):
         text = 'Полная информация об участнике:\nИмя: {0}\nГде работает: {1}\nИнтересы: {2}\nUsername: @{3}' \
                ''.format(info['fullname'], info['job'], info['interests'], info['username'])
         inline_markup = generate_more_users()
-        if info['photo'] != NO_PHOTO_FLAG:
-            try:
-                src = IMG_PATH + str(pid)
-                with open(src, 'wb') as new_file:
-                    new_file.write(info['photo'])
-                bot.send_photo(cid, open(src, 'rb'))
-            except FileNotFoundError:
-                pass
+        try:
+            src = IMG_PATH + str(pid)
+            with open(src, 'wb') as new_file:
+                new_file.write(info['photo'])
+            bot.send_photo(cid, open(src, 'rb'))
+        except Exception:
+            pass
         bot.send_message(cid, text, reply_markup=inline_markup)
 
         info = auth_handler.get_profile(cid)
         text = 'Участник дал согласие на ваш запрос. Полная информация:\nИмя: {0}\nГде работает: {1}\nИнтересы: ' \
                '{2}\nUsername: @{3}'.format(info['fullname'], info['job'], info['interests'], info['username'])
-        if info['photo'] != NO_PHOTO_FLAG:
-            try:
-                src = IMG_PATH + str(cid)
-                with open(src, 'wb') as new_file:
-                    new_file.write(info['photo'])
-                bot.send_photo(pid, open(src, 'rb'))
-            except FileNotFoundError:
-                pass
+        try:
+            src = IMG_PATH + str(cid)
+            with open(src, 'wb') as new_file:
+                new_file.write(info['photo'])
+            bot.send_photo(pid, open(src, 'rb'))
+        except Exception:
+            pass
         bot.send_message(pid, text)
 
     elif call.data == 'more_users':
@@ -255,14 +253,13 @@ def callback(call):
         else:
             text = 'Имя: {0}\nГде работаешь: {1}\nИнтересы: {2}'.format(profile['fullname'], profile['job'],
                                                                         profile['interests'])
-            if profile['photo'] != NO_PHOTO_FLAG:
-                try:
-                    src = IMG_PATH + str(cid)
-                    with open(src, 'wb') as new_file:
-                        new_file.write(profile['photo'])
-                    bot.send_photo(cid, open(src, 'rb'))
-                except FileNotFoundError:
-                    pass
+            try:
+                src = IMG_PATH + str(cid)
+                with open(src, 'wb') as new_file:
+                    new_file.write(profile['photo'])
+                bot.send_photo(cid, open(src, 'rb'))
+            except Exception:
+                pass
         bot.send_message(cid, text)
 
     elif call.data == 'FAQ':
