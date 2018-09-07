@@ -47,7 +47,7 @@ class AuthHandler:
 
         if data[6] == NO_PHOTO_FLAG:
             data_insert_img = {
-                'data': NO_PHOTO_FLAG
+                'data': 'NULL'
             }
         else:
             data_insert_img = {
@@ -162,6 +162,7 @@ class AuthHandler:
                    "{1}\nИнтересы: {2}".format(user['fullname'], user['job'], user['interests'])
             bot.send_message(client_id, text, reply_markup=main_menu)
 
+            print(user['photo'])
             if user['photo'] != NO_PHOTO_FLAG:
                 src = IMG_PATH + str(message.chat.id)
                 with open(src, 'wb') as new_file:
