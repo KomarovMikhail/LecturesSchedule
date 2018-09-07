@@ -15,12 +15,7 @@ class AuthHandler:
     def _init_db(self):
         conn = psycopg2.connect(self._db_path, sslmode='require')
         cursor = conn.cursor()
-        cursor.execute(IF_DROP_PARTICIPANTS)
         cursor.execute(IF_CREATE_PARTICIPANTS)
-
-        # test labels
-        # cursor.execute(INSERT_PARTICIPANTS.format(1, 'username1', 'name1', 'job1', 'interests1', "B'1'", None))
-        # cursor.execute(INSERT_PARTICIPANTS.format(2, 'username2', 'name2', 'job2', 'interests2', "B'1'", None))
 
         conn.commit()
         conn.close()
