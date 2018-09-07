@@ -13,7 +13,7 @@ DELETE_FAVORITE = "DELETE FROM favorite WHERE id = {0}"
 CREATE_PARTICIPANTS = "CREATE TABLE participants(id INT, username TEXT, fullname TEXT," \
                       "job TEXT, interests TEXT, active BIT, photo BYTEA, PRIMARY KEY(id))"
 IF_CREATE_PARTICIPANTS = "CREATE TABLE IF NOT EXISTS participants(id INT, username TEXT, fullname TEXT," \
-                         "job TEXT, interests TEXT, active BIT, photo TEXT, PRIMARY KEY(id))"
+                         "job TEXT, interests TEXT, active BIT, photo BYTEA, PRIMARY KEY(id))"
 IF_DROP_PARTICIPANTS = "DROP TABLE IF EXISTS participants"
 DROP_PARTICIPANTS = "DROP TABLE participants"
 SELECT_ALL_PARTICIPANTS = "SELECT * FROM participants"

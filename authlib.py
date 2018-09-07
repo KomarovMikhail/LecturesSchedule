@@ -161,7 +161,7 @@ class AuthHandler:
             # b = bytearray()
             # b.extend(map(ord, user['photo']))
             # print(type(b))
-            f = open(src, 'w')
+            f = open(src, 'wb')
             f.write(user['photo'])
             f.close()
             # with open(src, 'wb') as new_file:
