@@ -131,8 +131,8 @@ def callback(call):
         try:
             lectures = []
             if option == '(full)':
-                text = ['Расписание ближайших докладов:\n(Нажми {0}({1}), чтобы добавить(удалить) доклад в "избранное")'
-                        ''.format(FIRE, CROSS_MARK)]
+                text = ['Расписание ближайших докладов:\n(Нажми {0}, чтобы добавить(удалить) доклад в "избранное")'
+                        ''.format(FIRE)]
                 bot.send_message(cid, text)
                 lectures = ss_handler.get_lectures(cid)
             elif option == '(more)':
@@ -150,7 +150,7 @@ def callback(call):
                            ''.format(l['name'], l['start'], l['lecturer'], l['where'])
                     inline_markup = generate_lectures_list(l['id'], already_added=in_favorite(cid, l['id']))
                     bot.send_message(cid, text, reply_markup=inline_markup)
-                if option == '(full)':
+                if option == '(full)' or option == '(more)':
                     text = 'Жми "Еще доклады", если хочешь посмотреть больше докладов.'
                     inline_markup = generate_more_lectures()
                     bot.send_message(cid, text, reply_markup=inline_markup)
@@ -336,8 +336,8 @@ def callback(call):
             bot.send_message(cid, 'У вас пока нет избранных докладов.')
         else:
             bot.send_message(cid, 'Избранные доклады:\n'
-                                  '(Нажми {0}({1}) чтобы убрать(добавить) доклад из "избранного")'
-                                  ''.format(CROSS_MARK, FIRE))
+                                  '(Нажми {0} чтобы убрать(добавить) доклад из "избранного")'
+                                  ''.format(CROSS_MARK))
             lectures = up_handler.get_lectures_by_ids(lids)
             for l in lectures:
                 text = 'Что: {0}\nГде: {3}\nКогда: {1}\nКто читает: {2}' \
