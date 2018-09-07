@@ -45,7 +45,7 @@ class AuthHandler:
         exists = cursor.fetchall()
 
         data_insert_img = {
-            'data': psycopg2.Binary(open(data[6]).read())
+            'data': psycopg2.Binary(open(data[6], 'rb').read())
         }
 
         if exists[0][0]:
