@@ -212,7 +212,10 @@ def callback(call):
         inline_markup = generate_more_users()
         if info['photo'] != NO_PHOTO_FLAG:
             try:
-                bot.send_photo(cid, open(info['photo'], 'rb'))
+                src = IMG_PATH + str(pid)
+                with open(src, 'wb') as new_file:
+                    new_file.write(info['photo'])
+                bot.send_photo(cid, open(src, 'rb'))
             except FileNotFoundError:
                 pass
         bot.send_message(cid, text, reply_markup=inline_markup)
@@ -222,7 +225,10 @@ def callback(call):
                '{2}\nUsername: @{3}'.format(info['fullname'], info['job'], info['interests'], info['username'])
         if info['photo'] != NO_PHOTO_FLAG:
             try:
-                bot.send_photo(pid, open(info['photo'], 'rb'))
+                src = IMG_PATH + str(cid)
+                with open(src, 'wb') as new_file:
+                    new_file.write(info['photo'])
+                bot.send_photo(pid, open(src, 'rb'))
             except FileNotFoundError:
                 pass
         bot.send_message(pid, text)
@@ -251,7 +257,10 @@ def callback(call):
                                                                         profile['interests'])
             if profile['photo'] != NO_PHOTO_FLAG:
                 try:
-                    bot.send_photo(cid, open(profile['photo'], 'rb'))
+                    src = IMG_PATH + str(cid)
+                    with open(src, 'wb') as new_file:
+                        new_file.write(profile['photo'])
+                    bot.send_photo(cid, open(src, 'rb'))
                 except FileNotFoundError:
                     pass
         bot.send_message(cid, text)

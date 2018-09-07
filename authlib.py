@@ -45,9 +45,14 @@ class AuthHandler:
         cursor.execute(EXISTS_PARTICIPANTS.format(client_id))
         exists = cursor.fetchall()
 
-        data_insert_img = {
-            'data': psycopg2.Binary(open(data[6], 'rb').read())
-        }
+        if data[6] == NO_PHOTO_FLAG:
+            data_insert_img = {
+                'data': NO_PHOTO_FLAG
+            }
+        else:
+            data_insert_img = {
+                'data': psycopg2.Binary(open(data[6], 'rb').read())
+            }
 
         if exists[0][0]:
             cursor.execute(UPDATE_PARTICIPANTS.format(data[0], data[1], data[2], data[3], data[4], data[5]),
@@ -157,16 +162,11 @@ class AuthHandler:
                    "{1}\nИнтересы: {2}".format(user['fullname'], user['job'], user['interests'])
             bot.send_message(client_id, text, reply_markup=main_menu)
 
-            src = IMG_PATH + str(message.chat.id) + 'buf'
-            # b = bytearray()
-            # b.extend(map(ord, user['photo']))
-            # print(type(b))
-            f = open(src, 'wb')
-            f.write(user['photo'])
-            f.close()
-            # with open(src, 'wb') as new_file:
-            #     new_file.write(user['photo'])
-            bot.send_photo(client_id, open(src, 'rb'))
+            if user['photo'] != NO_PHOTO_FLAG:
+                src = IMG_PATH + str(message.chat.id)
+                with open(src, 'wb') as new_file:
+                    new_file.write(user['photo'])
+                bot.send_photo(client_id, open(src, 'rb'))
 
     def get_profile(self, client_id):
         conn = psycopg2.connect(self._db_path, sslmode='require')
