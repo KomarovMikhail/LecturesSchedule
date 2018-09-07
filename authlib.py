@@ -44,10 +44,8 @@ class AuthHandler:
         cursor.execute(EXISTS_PARTICIPANTS.format(client_id))
         exists = cursor.fetchall()
 
-        with open(data[6], 'rb') as img:
-            img_data = img.read()
         data_insert_img = {
-            'data': psycopg2.Binary(img_data)
+            'data': psycopg2.Binary(open(data[6]).read())
         }
 
         if exists[0][0]:
@@ -159,8 +157,10 @@ class AuthHandler:
             bot.send_message(client_id, text, reply_markup=main_menu)
 
             src = IMG_PATH + str(message.chat.id) + 'buf'
-            with open(src, 'wb') as new_file:
-                new_file.write(str(user['photo']))
+            print(type(user['photo']))
+            open(src, 'wb').write(user['photo'])
+            # with open(src, 'wb') as new_file:
+            #     new_file.write(user['photo'])
             bot.send_photo(client_id, open(src, 'rb'))
 
     def get_profile(self, client_id):
