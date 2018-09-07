@@ -83,13 +83,12 @@ def generate_more_users():
 def generate_lectures_list(lid, already_added=False):
     inline_markup = types.InlineKeyboardMarkup()
     callback_data_1 = 'get_full_info{0}'.format(lid)
+    callback_data_2 = 'add_to_fav{0}'.format(lid)
     callback_data_3 = 'estimate{0}'.format(lid)
     b_1 = types.InlineKeyboardButton(text='Подробнее...', callback_data=callback_data_1)
     if already_added:
-        callback_data_2 = 'rem_from_fav{0}'.format(lid)
         b_2 = types.InlineKeyboardButton(text=FIRE + CHECK_MARK, callback_data=callback_data_2)
     else:
-        callback_data_2 = 'add_to_fav{0}'.format(lid)
         b_2 = types.InlineKeyboardButton(text=FIRE, callback_data=callback_data_2)
     b_3 = types.InlineKeyboardButton(text='Оценить', callback_data=callback_data_3)
     inline_markup.add(b_1, b_2, b_3)
@@ -99,20 +98,19 @@ def generate_lectures_list(lid, already_added=False):
 def generate_favorite_list(lid, already_removed=False):
     inline_markup = types.InlineKeyboardMarkup()
     callback_data_1 = 'get_full_info{0}'.format(lid)
+    callback_data_2 = 'rem_from_fav{0}'.format(lid)
     callback_data_3 = 'estimate{0}'.format(lid)
     b_1 = types.InlineKeyboardButton(text='Подробнее...', callback_data=callback_data_1)
     if already_removed:
-        callback_data_2 = 'add_to_fav{0}'.format(lid)
         b_2 = types.InlineKeyboardButton(text=CROSS_MARK + CHECK_MARK, callback_data=callback_data_2)
     else:
-        callback_data_2 = 'rem_from_fav{0}'.format(lid)
         b_2 = types.InlineKeyboardButton(text=CROSS_MARK, callback_data=callback_data_2)
     b_3 = types.InlineKeyboardButton(text='Оценить', callback_data=callback_data_3)
     inline_markup.add(b_1, b_2, b_3)
     return inline_markup
 
 
-def generate_esimate_lecture(lid):
+def generate_estimate_lecture(lid):
     inline_markup = types.InlineKeyboardMarkup()
     callback_data_1 = 'get_full_info{0}'.format(lid)
     callback_data_2 = 'estimate{0}'.format(lid)

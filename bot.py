@@ -288,7 +288,12 @@ def callback(call):
             bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
                                           reply_markup=generate_lectures_list(lid, already_added=True))
         except AlreadyAddedError:
-            bot.send_message(cid, 'Этот доклад уже добавлен в избранное.')
+            remove_from_favorite(cid, lid)
+            lecture = up_handler.get_lecture_by_id(lid)
+            text = 'Доклад "{0}" удален из избранного.'.format(lecture['name'])
+            bot.send_message(cid, text)
+            bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
+                                          reply_markup=generate_lectures_list(lid))
 
     elif call.data[:12] == 'rem_from_fav':
         lid = call.data[12:]
@@ -300,7 +305,12 @@ def callback(call):
             bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
                                           reply_markup=generate_favorite_list(lid, already_removed=True))
         except AlreadyRemovedError:
-            bot.send_message(cid, 'Этот доклад уже удален из избранного.')
+            add_to_favorite(cid, lid)
+            lecture = up_handler.get_lecture_by_id(lid)
+            text = 'Доклад "{0}" добавлен в избранное.'.format(lecture['name'])
+            bot.send_message(cid, text)
+            bot.edit_message_reply_markup(chat_id=cid, message_id=call.message.message_id,
+                                          reply_markup=generate_favorite_list(lid))
 
     elif call.data[:8] == 'estimate':
         lid = call.data[8:]
@@ -398,7 +408,7 @@ def ask_for_estimation():
         cids = get_user_ids(lecture['id'])
         text = 'Несколько минут назад закончился доклад {0} ({1})\nПредлагаем вам оценить его.' \
                ''.format(lecture['name'], lecture['lecturer'])
-        inline_markup = generate_esimate_lecture(lecture['id'])
+        inline_markup = generate_estimate_lecture(lecture['id'])
         for cid in cids:
             bot.send_message(cid, text, reply_markup=inline_markup)
 
