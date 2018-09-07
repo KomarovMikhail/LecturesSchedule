@@ -3,6 +3,7 @@ from constants.config import IMG_PATH, NO_PHOTO_FLAG
 import psycopg2
 from constants.queries import *
 from botlib import skip_button, main_menu_button
+import array
 
 
 class AuthHandler:
@@ -157,8 +158,10 @@ class AuthHandler:
             bot.send_message(client_id, text, reply_markup=main_menu)
 
             src = IMG_PATH + str(message.chat.id) + 'buf'
-            print(type(user['photo']))
-            open(src, 'wb').write(user['photo'])
+            b = bytearray()
+            b.extend(map(ord, user['photo']))
+            print(type(b))
+            open(src, 'wb').write(b)
             # with open(src, 'wb') as new_file:
             #     new_file.write(user['photo'])
             bot.send_photo(client_id, open(src, 'rb'))
